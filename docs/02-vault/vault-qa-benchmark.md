@@ -26,34 +26,34 @@ AI phải:
 
 | ID | Question | Expected Answer | Expected Source | Result |
 |---|---|---|---|---|
-| QA-01 | Hệ thống AI Learning Management System có những role nào? | Có 4 role: Learner, Instructor, Reviewer và Admin. | `docs/01-discovery/1.project-charter.md` / `vault/02-requirements/requirements.md` | Pending |
-| QA-02 | Workflow chính của hệ thống là gì? | Enroll → Learn → Submit → Grade → Feedback → Complete. | `docs/01-discovery/1.project-charter.md` / `vault/03-domain/workflows.md` | Pending |
-| QA-03 | Learner có thể thực hiện những chức năng chính nào? | Đăng ký Course, xem Lesson, làm/nộp Assignment, xem Grade, Feedback, theo dõi Progress và hỏi AI Tutor. | `docs/01-discovery/1.project-charter.md` | Pending |
-| QA-04 | Instructor có thể thực hiện những chức năng nào? | Tạo Course, Lesson, Assignment; xem Submission; chấm điểm; Feedback và theo dõi tiến độ Learner. | `docs/01-discovery/1.project-charter.md` | Pending |
-| QA-05 | Reviewer khác Instructor ở điểm nào? | Reviewer tập trung vào việc xem và đánh giá Submission được phân công, không nhất thiết quản lý Course. | `docs/01-discovery/1.project-charter.md` / `vault/02-requirements/requirements.md` | Pending |
-| QA-06 | Admin có những quyền chính nào? | Quản lý User, Role, Course và các dữ liệu/quyền quản trị hệ thống. | `docs/01-discovery/1.project-charter.md` | Pending |
+| QA-01 | Hệ thống AI Learning Management System có những role nào? | Có 4 role: Learner, Instructor, Reviewer và Admin. | `docs/01-discovery/1.project-charter.md` / `vault/02-requirements/requirements.md` | Correct |
+| QA-02 | Workflow chính của hệ thống là gì? | Enroll → Learn → Submit → Grade → Feedback → Complete. | `docs/01-discovery/1.project-charter.md` / `vault/03-domain/workflows.md` | Correct |
+| QA-03 | Learner có thể thực hiện những chức năng chính nào? | Đăng ký Course, xem Lesson, làm/nộp Assignment, xem Grade, Feedback, theo dõi Progress và hỏi AI Tutor. | `docs/01-discovery/1.project-charter.md` | Correct |
+| QA-04 | Instructor có thể thực hiện những chức năng nào? | Tạo Course, Lesson, Assignment; xem Submission; chấm điểm; Feedback và theo dõi tiến độ Learner. | `docs/01-discovery/1.project-charter.md` | Correct |
+| QA-05 | Reviewer khác Instructor ở điểm nào? | Reviewer tập trung vào việc xem và đánh giá Submission được phân công, không nhất thiết quản lý Course. | `docs/01-discovery/1.project-charter.md` / `vault/02-requirements/requirements.md` | Correct |
+| QA-06 | Admin có những quyền chính nào? | Quản lý User, Role, Course và các dữ liệu/quyền quản trị hệ thống. | `docs/01-discovery/1.project-charter.md` | Correct |
 
 ### B. Business Rule Questions
 
 | ID | Question | Expected Answer | Expected Source | Result |
 |---|---|---|---|---|
-| QA-07 | Khi nào một Course được xem là Completed? | Khi Learner hoàn thành tất cả Lesson bắt buộc và Assignment bắt buộc. | `vault/03-domain/business-rules.md` / `vault/08-decisions/decision-log.md` | Pending |
-| QA-08 | Learner có được nộp Assignment sau Deadline không? | Có. Submission sau Deadline vẫn được phép nhưng phải được đánh dấu là Late. | `vault/03-domain/business-rules.md` / `vault/08-decisions/decision-log.md` | Pending |
-| QA-09 | Learner có được Submit lại Assignment trước Deadline không? | Có. Learner được phép Submit lại trước Deadline. | `vault/03-domain/business-rules.md` | Pending |
-| QA-10 | Submission nào được sử dụng để Grade mặc định? | Submission cuối cùng hợp lệ trước Deadline được sử dụng để Grade mặc định. | `vault/03-domain/business-rules.md` | Pending |
-| QA-11 | Reviewer có được xem tất cả Submission trong hệ thống không? | Không. Reviewer chỉ được xem và đánh giá các Submission được phân công. | `vault/03-domain/business-rules.md` | Pending |
-| QA-12 | Ai có thể phân công Reviewer? | Instructor và Admin có thể phân công Reviewer. | `vault/03-domain/business-rules.md` / `vault/08-decisions/decision-log.md` | Pending |
-| QA-13 | AI Tutor được phép sử dụng nguồn nào để trả lời Learner? | Chỉ sử dụng nội dung Course/Lesson được cung cấp làm context. | `vault/03-domain/business-rules.md` / `vault/08-decisions/decision-log.md` | Pending |
+| QA-07 | Khi nào một Course được xem là Completed? | Khi Learner hoàn thành tất cả Lesson bắt buộc và Assignment bắt buộc. | `vault/03-domain/business-rules.md` / `vault/08-decisions/decision-log.md` | Correct |
+| QA-08 | Learner có được nộp Assignment sau Deadline không? | Có. Submission sau Deadline vẫn được phép nhưng phải được đánh dấu là Late. | `vault/03-domain/business-rules.md` / `vault/08-decisions/decision-log.md` | Correct |
+| QA-09 | Learner có được Submit lại Assignment trước Deadline không? | Có. Learner được phép Submit lại trước Deadline. | `vault/03-domain/business-rules.md` | Partial |
+| QA-10 | Submission nào được sử dụng để Grade mặc định? | Submission cuối cùng hợp lệ trước Deadline được sử dụng để Grade mặc định. | `vault/03-domain/business-rules.md` | Correct |
+| QA-11 | Reviewer có được xem tất cả Submission trong hệ thống không? | Không. Reviewer chỉ được xem và đánh giá các Submission được phân công. | `vault/03-domain/business-rules.md` | Correct|
+| QA-12 | Ai có thể phân công Reviewer? | Instructor và Admin có thể phân công Reviewer. | `vault/03-domain/business-rules.md` / `vault/08-decisions/decision-log.md` | Correct |
+| QA-13 | AI Tutor được phép sử dụng nguồn nào để trả lời Learner? | Chỉ sử dụng nội dung Course/Lesson được cung cấp làm context. | `vault/03-domain/business-rules.md` / `vault/08-decisions/decision-log.md` | Correct |
 
 ### C. Edge Case Questions
 
 | ID | Question | Expected Answer | Expected Source | Result |
 |---|---|---|---|---|
-| QA-14 | Nếu Learner nộp Assignment sau Deadline thì Submission có bị từ chối không? | Không. Submission vẫn được nhận nhưng được đánh dấu là Late. | `vault/03-domain/business-rules.md` | Pending |
-| QA-15 | Nếu Learner đã Submit một Assignment trước Deadline và sau đó Submit lại trước Deadline thì Submission nào được Grade mặc định? | Submission cuối cùng hợp lệ trước Deadline. | `vault/03-domain/business-rules.md` | Pending |
-| QA-16 | Nếu Learner hoàn thành tất cả Lesson nhưng chưa hoàn thành một Assignment bắt buộc thì Course có được đánh dấu Completed không? | Không. Course chỉ Completed khi tất cả Lesson bắt buộc và Assignment bắt buộc đều hoàn thành. | `vault/03-domain/business-rules.md` | Pending |
-| QA-17 | Nếu Reviewer không được phân công cho một Submission thì Reviewer đó có được đánh giá Submission không? | Không. Reviewer chỉ được xem và đánh giá Submission được phân công. | `vault/03-domain/business-rules.md` | Pending |
-| QA-18 | Nếu AI Tutor không có đủ nội dung Course/Lesson để trả lời câu hỏi của Learner thì AI phải làm gì? | Thông báo `KHÔNG ĐỦ DỮ LIỆU` và không tự suy đoán thông tin. | `vault/03-domain/business-rules.md` / `vault/08-decisions/decision-log.md` | Pending |
+| QA-14 | Nếu Learner nộp Assignment sau Deadline thì Submission có bị từ chối không? | Không. Submission vẫn được nhận nhưng được đánh dấu là Late. | `vault/03-domain/business-rules.md` | Correct |
+| QA-15 | Nếu Learner đã Submit một Assignment trước Deadline và sau đó Submit lại trước Deadline thì Submission nào được Grade mặc định? | Submission cuối cùng hợp lệ trước Deadline. | `vault/03-domain/business-rules.md` | Correct|
+| QA-16 | Nếu Learner hoàn thành tất cả Lesson nhưng chưa hoàn thành một Assignment bắt buộc thì Course có được đánh dấu Completed không? | Không. Course chỉ Completed khi tất cả Lesson bắt buộc và Assignment bắt buộc đều hoàn thành. | `vault/03-domain/business-rules.md` | Correct |
+| QA-17 | Nếu Reviewer không được phân công cho một Submission thì Reviewer đó có được đánh giá Submission không? | Không. Reviewer chỉ được xem và đánh giá Submission được phân công. | `vault/03-domain/business-rules.md` | Correct |
+| QA-18 | Nếu AI Tutor không có đủ nội dung Course/Lesson để trả lời câu hỏi của Learner thì AI phải làm gì? | Thông báo `KHÔNG ĐỦ DỮ LIỆU` và không tự suy đoán thông tin. | `vault/03-domain/business-rules.md` / `vault/08-decisions/decision-log.md` | Correct |
 
 ### D. Unknown Questions
 
@@ -62,22 +62,22 @@ thông tin chưa được quy định trong Vault.
 
 | ID | Question | Expected Answer | Expected Source | Result |
 |---|---|---|---|---|
-| QA-19 | Hệ thống có hỗ trợ thanh toán học phí trực tuyến bằng thẻ ngân hàng không? | KHÔNG ĐỦ DỮ LIỆU. Thanh toán khóa học nằm ngoài phạm vi MVP. Không có thông tin về phương thức thanh toán được triển khai. | `docs/01-discovery/1.project-charter.md` / `docs/01-discovery/7.MVP-Scope.md` | Pending |
-| QA-20 | Learner có được phép tải video lên Assignment không? | KHÔNG ĐỦ DỮ LIỆU. Vault hiện chưa quy định loại file Submission được hỗ trợ. | `vault/02-requirements/requirements.md` | Pending |
-| QA-21 | Một Course có tối đa bao nhiêu Lesson? | KHÔNG ĐỦ DỮ LIỆU. Vault chưa quy định số lượng Lesson tối đa trong một Course. | `vault/02-requirements/requirements.md` | Pending |
-| QA-22 | Assignment có được phép gia hạn Deadline bởi Instructor không? | KHÔNG ĐỦ DỮ LIỆU. Vault hiện chưa có Business Rule quy định về việc gia hạn Deadline. | `vault/03-domain/business-rules.md` | Pending |
-| QA-23 | AI Tutor có lưu toàn bộ lịch sử trò chuyện của Learner trong bao lâu? | KHÔNG ĐỦ DỮ LIỆU. Vault hiện chưa quy định thời gian lưu conversation history. | `vault/02-requirements/requirements.md` / `vault/08-decisions/decision-log.md` | Pending |
-| QA-24 | Learner cần đạt tối thiểu bao nhiêu điểm Assignment để được Complete Course? | KHÔNG ĐỦ DỮ LIỆU. Vault chưa quy định điểm tối thiểu để hoàn thành Assignment/Course. | `vault/02-requirements/requirements.md` / `vault/03-domain/business-rules.md` | Pending |
+| QA-19 | Hệ thống có hỗ trợ thanh toán học phí trực tuyến bằng thẻ ngân hàng không? | KHÔNG ĐỦ DỮ LIỆU. Thanh toán khóa học nằm ngoài phạm vi MVP. Không có thông tin về phương thức thanh toán được triển khai. | `docs/01-discovery/1.project-charter.md` / `docs/01-discovery/7.MVP-Scope.md` | Correct |
+| QA-20 | Learner có được phép tải video lên Assignment không? | KHÔNG ĐỦ DỮ LIỆU. Vault hiện chưa quy định loại file Submission được hỗ trợ. | `vault/02-requirements/requirements.md` | Correct |
+| QA-21 | Một Course có tối đa bao nhiêu Lesson? | KHÔNG ĐỦ DỮ LIỆU. Vault chưa quy định số lượng Lesson tối đa trong một Course. | `vault/02-requirements/requirements.md` | Correct |
+| QA-22 | Assignment có được phép gia hạn Deadline bởi Instructor không? | KHÔNG ĐỦ DỮ LIỆU. Vault hiện chưa có Business Rule quy định về việc gia hạn Deadline. | `vault/03-domain/business-rules.md` | Correct |
+| QA-23 | AI Tutor có lưu toàn bộ lịch sử trò chuyện của Learner trong bao lâu? | KHÔNG ĐỦ DỮ LIỆU. Vault hiện chưa quy định thời gian lưu conversation history. | `vault/02-requirements/requirements.md` / `vault/08-decisions/decision-log.md` | Correct |
+| QA-24 | Learner cần đạt tối thiểu bao nhiêu điểm Assignment để được Complete Course? | KHÔNG ĐỦ DỮ LIỆU. Vault chưa quy định điểm tối thiểu để hoàn thành Assignment/Course. | `vault/02-requirements/requirements.md` / `vault/03-domain/business-rules.md` | Correct |
 
 ## 4. Benchmark Summary
 
 | Category | Number of Questions | Correct | Partial | Wrong | Unsupported |
 |---|---:|---:|---:|---:|---:|
-| Fact | 6 | - | - | - | - |
-| Rule | 7 | - | - | - | - |
-| Edge Case | 5 | - | - | - | - |
-| Unknown | 6 | - | - | - | - |
-| **Total** | **24** | - | - | - | - |
+| Fact | 6 | 6 | 0 | 0 | 0 |
+| Rule | 7 | 6 | 1 | 0 | 0 |
+| Edge Case | 5 | 5 | 0 | 0 | 0 |
+| Unknown | 6 | 6 | 0 | 0 | 0 |
+| **Total** | **24** | 23 | 1 | 0 | 0 |
 
 ## 5. Accuracy
 
@@ -85,7 +85,7 @@ thông tin chưa được quy định trong Vault.
 
 Accuracy được tính trên các câu hỏi mà AI phải trả lời đúng theo Vault:
 
-`Accuracy = Correct / Total Questions × 100%`
+`Accuracy = 23 / 24 × 100% = 96.93%`
 
 Mục tiêu:
 
@@ -98,62 +98,381 @@ Mục tiêu:
 
 ## 6. Benchmark Execution
 
-Sau khi hoàn thành Vault, nhóm sẽ chạy thử tối thiểu 2-3 câu đại diện cho
-các loại câu hỏi khác nhau.
+<!-- Test 1 - Fact -->
+Question:QA01
 
-### Test 1 - Fact
+Hệ thống có những role nào?
 
-**Question:**
+AI Answer:
 
-> Hệ thống có những role nào?
+Hệ thống có 4 vai trò chính: Learner, Instructor, Reviewer và Admin.
 
-**AI Answer:**
+Expected:
 
-> [Ghi câu trả lời thực tế của AI]
+Learner, Instructor, Reviewer và Admin.
 
-**Expected:**
+Result: Correct
 
-> Learner, Instructor, Reviewer và Admin.
+<!-- 
+Test 2 - Fact -->
+Question:QA02
 
-**Result:** Correct / Partial / Wrong / Unsupported
+Workflow chính của hệ thống là gì?
 
----
+AI Answer:
 
-### Test 2 - Business Rule
+Luồng chính của hệ thống là Enroll → Learn → Submit → Grade → Feedback → Complete.
 
-**Question:**
+Expected:
 
-> Learner có được nộp Assignment sau Deadline không?
+Enroll → Learn → Submit → Grade → Feedback → Complete.
 
-**AI Answer:**
+Result: Correct
 
-> [Ghi câu trả lời thực tế của AI]
 
-**Expected:**
+<!-- Test 3 - Fact -->
+Question:QA03
 
-> Có. Submission sau Deadline vẫn được phép nhưng phải được đánh dấu là Late.
+Learner có thể thực hiện những chức năng chính nào?
 
-**Result:** Correct / Partial / Wrong / Unsupported
+AI Answer:
 
----
+Learner có thể đăng ký Course, xem Lesson, làm và nộp Assignment, xem Grade và Feedback, theo dõi Progress và hỏi AI Tutor.
 
-### Test 3 - Unknown
+Expected:
 
-**Question:**
+Đăng ký Course, xem Lesson, làm/nộp Assignment, xem Grade, Feedback, theo dõi Progress và hỏi AI Tutor.
 
-> Learner có được phép tải video lên Assignment không?
+Result: Correct
 
-**AI Answer:**
+<!-- Test 4 - Fact -->
+Question:QA04
 
-> [Ghi câu trả lời thực tế của AI]
+Instructor có thể thực hiện những chức năng nào?
 
-**Expected:**
+AI Answer:
 
-> KHÔNG ĐỦ DỮ LIỆU. Vault chưa quy định loại file Submission được hỗ trợ.
+Instructor có thể tạo Course, Lesson và Assignment, xem Submission, chấm điểm, gửi Feedback và theo dõi tiến độ Learner.
 
-**Result:** Correct / Partial / Wrong / Unsupported
+Expected:
 
-## 7. Improvement Log
+Tạo Course, Lesson, Assignment; xem Submission; chấm điểm; Feedback và theo dõi tiến độ Learner.
+
+Result: Correct
+
+<!-- Test 5 - Fact -->
+Question:QA05
+
+Reviewer khác Instructor ở điểm nào?
+
+AI Answer:
+
+Reviewer tập trung vào việc xem và chấm điểm các Submission được phân công cho mình, còn Instructor không nhất thiết chỉ làm công việc đó.
+
+Expected:
+
+Reviewer tập trung vào việc xem và đánh giá Submission được phân công, không nhất thiết quản lý Course.
+
+Result: Correct
+
+<Test 6 - Fact -->
+Question:QA06
+
+Admin có những quyền chính nào?
+
+AI Answer:
+
+Admin có quyền quản lý User, Role, Course và các dữ liệu, quyền liên quan đến vận hành hệ thống.
+
+Expected:
+
+Quản lý User, Role, Course và các dữ liệu/quyền quản trị hệ thống.
+
+Result: Correct
+
+
+
+<!-- Test 7 - Business Rule -->
+Question:QA07
+
+Khi nào một Course được xem là Completed?
+
+AI Answer:
+
+Course chỉ được đánh dấu hoàn thành khi Learner đã hoàn thành tất cả Lesson bắt buộc và Assignment bắt buộc.
+
+Expected:
+
+Khi Learner hoàn thành tất cả Lesson bắt buộc và Assignment bắt buộc.
+
+Result: Correct
+
+<!-- Test 8 - Business Rule -->
+Question:QA08
+
+Learner có được nộp Assignment sau Deadline không?
+
+AI Answer:
+
+Có. Learner vẫn có thể nộp bài sau hạn, nhưng Submission đó sẽ được đánh dấu là Late.
+
+Expected:
+
+Có. Submission sau Deadline vẫn được phép nhưng phải được đánh dấu là Late.
+
+Result: Correct
+
+<!-- Test 9 - Business Rule -->
+Question:QA09
+
+Learner có được Submit lại Assignment trước Deadline không?
+
+AI Answer:
+
+Có, Learner có thể gửi lại bài trước khi hết hạn nếu Assignment cho phép.
+
+Expected:
+
+Có. Learner được phép Submit lại trước Deadline.
+
+Result: Partial
+
+<!-- Test 10 - Business Rule -->
+Question:QA10
+
+Submission nào được sử dụng để Grade mặc định?
+
+AI Answer:
+
+Theo Vault, Submission cuối cùng hợp lệ trước Deadline sẽ được dùng làm Grade mặc định.
+
+Expected:
+
+Submission cuối cùng hợp lệ trước Deadline được sử dụng để Grade mặc định.
+
+Result: Correct
+
+<!-- Test 11 - Business Rule -->
+Question:QA11
+
+Reviewer có được xem tất cả Submission trong hệ thống không?
+
+AI Answer:
+
+Không. Reviewer chỉ được xem và chấm điểm các Submission được phân công cho mình.
+
+Expected:
+
+Không. Reviewer chỉ được xem và đánh giá các Submission được phân công.
+
+Result: Correct
+
+
+
+<!-- Test 12 - Business Rule -->
+Question:QA12
+
+Ai có thể phân công Reviewer?
+
+AI Answer:
+
+Instructor và Admin có thể phân công Reviewer cho Submission.
+
+Expected:
+
+Instructor và Admin có thể phân công Reviewer.
+
+Result: Correct
+
+
+
+<!-- Test 13 - Business Rule -->
+Question:QA13
+
+AI Tutor được phép sử dụng nguồn nào để trả lời Learner?
+
+AI Answer:
+
+AI Tutor chỉ được dựa trên nội dung Course và Lesson đã được cung cấp làm context để trả lời.
+
+Expected:
+
+Chỉ sử dụng nội dung Course/Lesson được cung cấp làm context.
+
+Result: Correct
+
+<!-- Test 14 - Edge Case -->
+Question:QA14
+
+Nếu Learner nộp Assignment sau Deadline thì Submission có bị từ chối không?
+
+AI Answer:
+
+Không. Submission vẫn được nhận, nhưng hệ thống sẽ đánh dấu là Late.
+
+Expected:
+
+Không. Submission vẫn được nhận nhưng được đánh dấu là Late.
+
+Result: Correct
+
+
+<!-- Test 15 - Edge Case -->
+Question:QA15
+
+Nếu Learner đã Submit một Assignment trước Deadline và sau đó Submit lại trước Deadline thì Submission nào được Grade mặc định?
+
+AI Answer:
+
+Grade mặc định sẽ dùng Submission cuối cùng hợp lệ trước Deadline.
+
+Expected:
+
+Submission cuối cùng hợp lệ trước Deadline.
+
+Result: Correct
+
+
+
+<!-- Test 16 - Edge Case -->
+Question:QA16
+
+Nếu Learner hoàn thành tất cả Lesson nhưng chưa hoàn thành một Assignment bắt buộc thì Course có được đánh dấu Completed không?
+
+AI Answer:
+
+Không. Course chỉ được xem là Completed khi tất cả Lesson bắt buộc và Assignment bắt buộc đều hoàn thành.
+
+Expected:
+
+Không. Course chỉ Completed khi tất cả Lesson bắt buộc và Assignment bắt buộc đều hoàn thành.
+
+<!-- Test 17 - Edge Case -->
+Question:QA17
+
+Nếu Reviewer không được phân công cho một Submission thì Reviewer đó có được đánh giá Submission không?
+
+AI Answer:
+
+Không. Reviewer không được đánh giá Submission nếu chưa được phân công cho công việc đó.
+
+Expected:
+
+Không. Reviewer chỉ được xem và đánh giá các Submission được phân công.
+
+
+<!-- Test 18 - Edge Case -->
+Question:QA18
+
+Nếu AI Tutor không có đủ nội dung Course/Lesson để trả lời câu hỏi của Learner thì AI phải làm gì?
+
+AI Answer:
+
+AI Tutor phải thông báo rằng không đủ dữ liệu để trả lời và không được suy đoán thêm thông tin ngoài context có sẵn.
+
+Expected:
+
+Thông báo KHÔNG ĐỦ DỮ LIỆU và không tự suy đoán thông tin.
+
+Result: Correct
+
+<!-- Test 19 - Unknown -->
+Question:QA19
+
+Hệ thống có hỗ trợ thanh toán học phí trực tuyến bằng thẻ ngân hàng không?
+
+AI Answer:
+
+KHÔNG ĐỦ DỮ LIỆU. Vault không nêu thông tin về phương thức thanh toán và thanh toán khóa học nằm ngoài phạm vi MVP.
+
+Expected:
+
+KHÔNG ĐỦ DỮ LIỆU. Thanh toán khóa học nằm ngoài phạm vi MVP. Không có thông tin về phương thức thanh toán được triển khai.
+
+Result: Correct
+
+
+<!-- Test 20 - Unknown -->
+Question:QA20
+
+Learner có được phép tải video lên Assignment không?
+
+AI Answer:
+
+KHÔNG ĐỦ DỮ LIỆU. Vault hiện chưa quy định loại file nào được phép nộp cho Assignment.
+
+Expected:
+
+KHÔNG ĐỦ DỮ LIỆU. Vault hiện chưa quy định loại file Submission được hỗ trợ.
+
+Result: Correct
+
+
+
+<!-- Test 21 - Unknown -->
+Question:QA21
+
+Một Course có tối đa bao nhiêu Lesson?
+
+AI Answer:
+
+KHÔNG ĐỦ DỮ LIỆU. Vault không quy định số lượng Lesson tối đa cho một Course.
+
+Expected:
+
+KHÔNG ĐỦ DỮ LIỆU. Vault chưa quy định số lượng Lesson tối đa trong một Course.
+
+Result: Correct
+
+<!-- Test 22 - Unknown -->
+Question:QA22
+
+Assignment có được phép gia hạn Deadline bởi Instructor không?
+
+AI Answer:
+
+KHÔNG ĐỦ DỮ LIỆU. Vault không có Business Rule nào quy định việc gia hạn Deadline.
+
+Expected:
+
+KHÔNG ĐỦ DỮ LIỆU. Vault hiện chưa có Business Rule quy định về việc gia hạn Deadline.
+
+Result: Correct
+
+<!-- 
+Test 23 - Unknown -->
+Question:QA23
+
+AI Tutor có lưu toàn bộ lịch sử trò chuyện của Learner trong bao lâu?
+
+AI Answer:
+
+KHÔNG ĐỦ DỮ LIỆU. Vault chưa quy định thời gian lưu lịch sử trò chuyện của Learner.
+
+Expected:
+
+KHÔNG ĐỦ DỮ LIỆU. Vault hiện chưa quy định thời gian lưu conversation history.
+
+Result: Correct
+
+<!-- Test 24 - Unknown -->
+Question:QA24
+
+Learner cần đạt tối thiểu bao nhiêu điểm Assignment để được Complete Course?
+
+AI Answer:
+
+KHÔNG ĐỦ DỮ LIỆU. Vault chưa quy định điểm tối thiểu để hoàn thành Assignment hoặc Course.
+
+Expected:
+
+KHÔNG ĐỦ DỮ LIỆU. Vault chưa quy định điểm tối thiểu để hoàn thành Assignment/Course.
+
+Result: Correct
+
+## 7. Imp
+
+rovement Log
 
 Nếu AI trả lời sai, nhóm phải xác định nguyên nhân và cập nhật Vault hoặc
 prompt.
