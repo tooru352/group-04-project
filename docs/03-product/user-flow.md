@@ -1,8 +1,8 @@
-# AI LMS Prototype - Screen Flow
+# AI LMS Prototype - User Flow
 
 ## 1. Scope
 
-Tài liệu này mô tả navigation và interaction flow của prototype AI LMS tại `docs/03-product/prototype-URL/`. Prototype dùng sample data, không có backend/API/AI thật. Các hành vi chưa được quy định trong source-of-truth phải được xem là `ASSUMPTION` theo [prototype-brief.md](prototype-brief.md).
+Tài liệu này mô tả navigation và interaction flow của prototype AI LMS tại `docs/03-product/prototype-URL/`. Prototype dùng sample data, không có backend/API/AI thật. Các hành vi chưa được quy định trong source-of-truth phải được xem là `ASSUMPTION` theo [prototype-brief.md](prototype-brief.md). Bản này là User Flow của prototype và cần được đọc đồng bộ với [prototype-brief.md](prototype-brief.md) và [PRD.md](PRD.md), không phải như một tài liệu riêng tạo mới requirement/business rule.
 
 ## 2. Entry và role routing
 
@@ -11,10 +11,14 @@ flowchart TD
 	Login[Login]
 	Login -->|Chọn Learner| Learner[ Learner Dashboard ]
 	Login -->|Chọn Instructor| Instructor[ Instructor Dashboard ]
+	Login -->|Chọn Reviewer| Reviewer[ Reviewer Dashboard ]
+	Login -->|Chọn Admin| Admin[ Admin Console ]
 	Learner --> CourseList[Course List]
 	Learner --> CurrentCourse[Current Course]
 	Learner --> StateLab[State Lab]
 	Instructor --> Review[Submission Review]
+	Reviewer --> ReviewQueue[Assigned Reviews]
+	Admin --> UserMgmt[User & Role Management]
 ```
 
 | Screen | Entry action | Exit / next screen | Main state |
@@ -22,6 +26,8 @@ flowchart TD
 | Login | Mở prototype | Chọn role và Continue | default |
 | Learner Dashboard | Continue với Learner | Course List, Course Detail | default |
 | Instructor Dashboard | Continue với Instructor | Submission Review | default |
+| Reviewer Dashboard | Continue với Reviewer | Assigned Reviews / Submission Review | default |
+| Admin Console | Continue với Admin | User & Role Management | default |
 | State Lab | Learner chọn State lab | Kích hoạt state demo hoặc quay lại Course List | default |
 
 ## 3. FLOW A - Learner học Course / Lesson
@@ -109,8 +115,45 @@ flowchart LR
 5. Instructor xem bài làm, nhập Grade và Feedback.
 6. Chọn `Save grade & feedback` cập nhật kết quả và success feedback.
 7. Grade phải gắn với Submission cụ thể; Learner chỉ được xem Grade/Feedback của chính mình theo business rule.
+8. Reviewer và Admin không thay thế Instructor trong flow này; việc phân công Reviewer được thực hiện bởi Instructor/Admin theo BR-LMS-09.
 
-**Áp dụng:** `REQ-LMS-14`, `REQ-LMS-15`, `REQ-LMS-19`, `BR-LMS-06`, `BR-LMS-07`, `BR-LMS-10`, `BR-LMS-11`, `BR-LMS-17`.
+**Áp dụng:** `REQ-LMS-14`, `REQ-LMS-15`, `REQ-LMS-19`, `BR-LMS-06`, `BR-LMS-07`, `BR-LMS-09`, `BR-LMS-10`, `BR-LMS-11`, `BR-LMS-17`.
+
+## 6A. FLOW D1 - Reviewer review Submission được phân công
+
+```mermaid
+flowchart LR
+	Login[Login] --> Dash[Reviewer Dashboard]
+	Dash --> Queue[Assigned reviews]
+	Queue --> Review[Review Submission]
+	Review --> Grade[Grade + Feedback]
+	Grade --> Save[Save result]
+```
+
+1. Đăng nhập bằng sample role `Reviewer` mở Reviewer Dashboard.
+2. Dashboard hiển thị các Submission được phân công cho Reviewer.
+3. Reviewer chọn một Submission trong hàng đợi để xem bài làm và đánh giá.
+4. Reviewer nhập Grade và Feedback theo Submission được giao.
+5. Hệ thống chỉ cho Reviewer xem các Submission được phân công, không phải toàn bộ hệ thống.
+
+**Áp dụng:** `REQ-LMS-16`, `REQ-LMS-17`, `REQ-LMS-18`, `BR-LMS-08`, `BR-LMS-09`.
+
+## 6B. FLOW D2 - Admin quản trị hệ thống
+
+```mermaid
+flowchart LR
+	Login[Login] --> Admin[Admin Console]
+	Admin --> Users[User management]
+	Admin --> Roles[Role permissions]
+	Admin --> CourseAccess[Course access]
+```
+
+1. Đăng nhập bằng sample role `Admin` mở Admin Console.
+2. Admin xem danh sách người dùng, role và quyền truy cập.
+3. Admin kiểm tra/điều chỉnh phân quyền hoặc truy cập Course theo quy định hệ thống.
+4. View này phục vụ quản trị hệ thống, không phải flow học tập của Learner.
+
+**Áp dụng:** `REQ-LMS-26`, `REQ-LMS-27`, `BR-LMS-01`, `BR-LMS-09`, `BR-LMS-17`.
 
 ## 6. FLOW D - AI Tutor trong Lesson
 
@@ -168,7 +211,9 @@ flowchart LR
 | S10 | Submission Review / Grading | Instructor | Xem bài, Grade và Feedback |
 | S11 | Feedback | Learner / Instructor | Feedback nằm trong Submission result/review |
 | S12 | AI Tutor | Learner | Hỏi đáp trong Lesson context |
-| S13 | State Lab | QA / Reviewer | Kích hoạt required states để kiểm tra |
+| S13 | Reviewer Dashboard | Reviewer | Xem Submission được phân công |
+| S14 | Admin Console | Admin | Quản lý User, Role và quyền truy cập |
+| S15 | State Lab | QA / Reviewer | Kích hoạt required states để kiểm tra |
 
 ## 9. Navigation checklist
 
@@ -187,4 +232,4 @@ flowchart LR
 
 ## 10. Source-of-truth
 
-Requirement và Business Rule được tham chiếu trong [prototype-brief.md](prototype-brief.md) và [PRD.md](PRD.md). Screen flow này chỉ mô tả cách prototype kiểm chứng các item đó; không tạo thêm Requirement hoặc Business Rule.
+Requirement và Business Rule được tham chiếu trong [prototype-brief.md](prototype-brief.md) và [PRD.md](PRD.md). User Flow này chỉ mô tả cách prototype kiểm chứng các item đó; không tạo thêm Requirement hoặc Business Rule. Tên tài liệu được thống nhất là User Flow để tránh nhầm lẫn với Prototype Brief và Screen Flow khác trong docs/03-product.
