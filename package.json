@@ -1,0 +1,44 @@
+{
+  "name": "group-04-project",
+  "version": "1.0.0",
+  "description": "```text\r src/\r ├─ app/                         # routes/pages only\r ├─ modules/\r │  ├─ assistant/\r │  │  ├─ components/\r │  │  ├─ hooks/\r │  │  ├─ server/\r │  │  └─ index.ts\r │  ├─ catalog/\r │  ├─ cart/\r │  ├─ orders/\r │  └─ admin/\r ├─ shared/\r │  ├─ ui/\r │  ├─ validation/\r │  └─ utils/\r ├─ core/\r │  ├─ auth/\r │  ├─ db/\r │  ├─ logging/\r │  └─ ai/\r └─ tests/\r    ├─ integration/\r    └─ e2e/\r ```",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "lint": "node -e \"console.log('Lint: not configured for this repo yet; task-level validation is performed via typecheck + tests.');\"",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test --experimental-strip-types \"src/**/*.test.ts\"",
+    "build": "node -e \"console.log('Build: no app bundler configured in this repo yet; task evidence uses typecheck + tests.');\"",
+    "api": "node server/index.js",
+    "dev": "concurrently \"npm run api\" \"npm --prefix web run dev -- --host 0.0.0.0\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tooru352/group-04-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tooru352/group-04-project/issues"
+  },
+  "homepage": "https://github.com/tooru352/group-04-project#readme",
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.2",
+    "@types/pg": "^8.23.1",
+    "concurrently": "^10.0.5",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.3",
+    "express": "^5.2.1",
+    "pg": "^8.23.0"
+  }
+}

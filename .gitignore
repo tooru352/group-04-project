@@ -1,0 +1,11 @@
+node_modules/
+web/node_modules/
+web/dist/
+dist/
+build/
+.env
+.env.*
+coverage/
+.vite/
+.DS_Store
+npm-debug.log*
