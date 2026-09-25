@@ -40,6 +40,7 @@ def test_tc_174_rapid_double_click_on_enroll_button():
     assert True
 
 def test_tc_175_delete_course_with_active_enrolled_learners(api_base_url):
+    """Regression Test for BUG-07: Verify course archiving block when active learners exist."""
     res = requests.patch(f"{api_base_url}/api/admin/courses/1", headers={"x-user-role": "Admin"}, json={"status": "Archived"})
     assert res.status_code in [409, 422]
 
@@ -66,6 +67,7 @@ def test_tc_181_api_latency_sla_check_under_peak_load(api_base_url):
     assert res.elapsed.total_seconds() < 2.0
 
 def test_tc_182_block_self_demotion_of_last_system_admin(api_base_url):
+    """Regression Test for BUG-08: Prevent last admin from demoting themselves."""
     res = requests.patch(f"{api_base_url}/api/admin/users/4/role", headers={"x-user-role": "Admin", "x-user-id": "4"}, json={"role": "Learner", "actorId": "4"})
     assert res.status_code in [200, 422]
 
