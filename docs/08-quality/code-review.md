@@ -3,8 +3,8 @@
 > **Mã Output**: Output #25 - Code Review Evidence  
 > **Đường dẫn file**: `docs/08-quality/code-review.md`  
 > **Quy trình áp dụng**: `READ → UNDERSTAND → VERIFY → EVALUATE → RESPOND → IMPLEMENT`  
-> **Link Commit Evidence trên GitHub**: [`https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)  
-> **Commit Hash**: `119123d3ca55e42b4c88499c55c6d769e8bce008`  
+> **Link Commit Source Code Fix trên GitHub**: [`https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0) (`52718d0` - Sửa 3,988 dòng code JS/JSX)  
+> **Link Commit Test Automation Fix trên GitHub**: [`https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008) (`119123d` - Chạy 200/200 Pytest Pass)  
 > **Tác giả Commit**: Do Thi Kim Yen (`dothikimyen8883@gmail.com`)  
 > **Trạng thái Gate**: Approved & Merged into `main` (100% Checklist PASS, 84/84 Tests PASS)  
 
