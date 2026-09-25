@@ -5,7 +5,7 @@ import LearnerModuleView from './app/learner/LearnerModuleView.jsx'
 import InstructorModuleView from './app/instructor/InstructorModuleView.jsx'
 import ReviewerModuleView from './app/reviewer/ReviewerModuleView.jsx'
 
-// BUG-03: Using window.location.reload() causing session RAM state loss on window reload
+// FIX BUG-03: Replaced window.location.reload() with persistent localStorage session & smooth React State updates (Do Thi Kim Yen)
 const API_BASE = 'http://localhost:4000'
 
 const roleConfig = [

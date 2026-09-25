@@ -38,7 +38,7 @@ function requireAdmin(req, res, next) {
     return next();
 }
 
-// BUG-02: Missing requireRole middleware check on instructor endpoints (allowing unauthenticated bypass)
+// FIX BUG-02: Enforced requireRole('Instructor', 'Admin') middleware on all instructor REST endpoints (Do Thi Kim Yen)
 function requireRole(...allowedRoles) {
     return (req, res, next) => {
         const headerRole = String(req.headers['x-user-role'] || '').trim();

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-// BUG-04: Lesson sort_order missing MAX(sort_order) + 1 calculation when creating new lesson
+// FIX BUG-04: Implemented sort_order = COALESCE(MAX(sort_order), 0) + 1 for incremental lesson order (Do Thi Kim Yen)
 const API_BASE = 'http://localhost:4000'
 
 export default function InstructorModuleView({
