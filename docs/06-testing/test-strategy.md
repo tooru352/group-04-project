@@ -7,18 +7,20 @@
 > • Catalog 200 Testcases: [`docs/06-testing/testcase.md`](file:///d:/MIS3032/finall1000/docs/06-testing/testcase.md)  
 > • Specification 41 REST API Tests: [`docs/06-testing/api-test.md`](file:///d:/MIS3032/finall1000/docs/06-testing/api-test.md)  
 > • E2E Scenarios (Gherkin Syntax): [`docs/06-testing/e2e-scenarios.md`](file:///d:/MIS3032/finall1000/docs/06-testing/e2e-scenarios.md)  
-> **Trạng thái**: Completed & Verified (Total 200 Test Cases: 84 Backend Automated PASS + 41 Express REST API + 40 Frontend SPA UI + 35 Security & Edge Cases)  
+> **Trạng thái**: Completed & Verified (Total 202 Test Cases: 84 Backend Automated PASS + 41 Express REST API + 40 Frontend SPA UI + 37 Security & Edge Cases)
 
 ---
 
 ## 1. Phân tích Tổng quan & Ma trận Coverage Kiểm thử
 
-Để kiểm thử **toàn bộ hệ thống LMS** một cách toàn diện tuyệt đối (bao gồm Backend API Services, Express REST API Server, CSDL Supabase PostgreSQL, Frontend SPA React UI và An ninh bảo mật), chiến lược kiểm thử được tổng hợp thành **200 Test Cases** chia thành 4 khối chính:
+Để kiểm thử **toàn bộ hệ thống LMS** một cách toàn diện tuyệt đối (bao gồm Backend API Services, Express REST API Server, CSDL Supabase PostgreSQL, Frontend SPA React UI và An ninh bảo mật), chiến lược kiểm thử hiện tại được tổng hợp thành **202 Test Cases** chia thành 4 khối chính.
+
+> Lưu ý: các tài liệu cũ từng ghi `200` test cases là template legacy; suite thực tế trong repo hiện tại đã được mở rộng bằng các negative-case về permission, validation và business rule, nên tổng số thực tế là `202`.
 
 1. **Khối I: 84 Automated Backend Unit & Integration Tests** ([`src/**/*.test.ts`](file:///d:/MIS3032/finall1000/src/server/db-schema.test.ts)): Đã lập trình tự động 100%, kiểm tra trực tiếp các Services, Business rules, RBAC permissions, Database Schema & Audit logs.
 2. **Khối II: 41 Express REST API Endpoint Integration Tests** ([`docs/06-testing/api-test.md`](file:///d:/MIS3032/finall1000/docs/06-testing/api-test.md)): Kiểm thử toàn bộ các đường dẫn API HTTP (`/api/auth`, `/api/courses`, `/api/lessons`, `/api/assignments`, `/api/submissions`, `/api/reviewer`, `/api/admin`, `/api/ai`) với các mã trạng thái HTTP 200, 400, 401, 403, 404, 409, 422, 500.
 3. **Khối III: 40 Frontend SPA React UI & Component Tests** (`web/src/`): Kiểm thử trải nghiệm giao diện người dùng, Form Validation, Thanh tiến độ bài học, Drawer AI Tutor, Modal phân công Reviewer, Responsive layout mobile/desktop, Dark mode.
-4. **Khối IV: 35 Security, Resilience, Performance & Boundary Edge Cases**: Kiểm thử bảo mật (XSS, SQL Injection, Prompt Injection AI), chống click đúp, mất mạng internet, hết hạn JWT token, xung đột dữ liệu Optimistic Locking, và Hiệu năng Tải trọng.
+4. **Khối IV: 37 Security, Resilience, Performance & Boundary Edge Cases**: Kiểm thử bảo mật (XSS, SQL Injection, Prompt Injection AI), chống click đúp, mất mạng internet, hết hạn JWT token, xung đột dữ liệu Optimistic Locking, và Hiệu năng Tải trọng.
 
 ---
 
@@ -42,8 +44,9 @@ Bảng tổng hợp chiến lược kiểm thử theo từng tầng áp dụng t
 | **Phần I: Automated Backend & Domain Unit Tests** | 84 Cases | Kiểm thử unit & integration cho 16 test files tự động hóa trong `src/**/*.test.ts` (100% PASS). | [`testcase.md`](file:///d:/MIS3032/finall1000/docs/06-testing/testcase.md) |
 | **Phần II: Express REST API Endpoint Integration Tests** | 41 Cases | Kiểm thử tất cả HTTP API Endpoints trên `server/index.js` (Status 200, 400, 401, 403, 404, 409, 422, 500) và mẫu cURL scripts. | [`api-test.md`](file:///d:/MIS3032/finall1000/docs/06-testing/api-test.md) |
 | **Phần III: Frontend SPA React UI & Component Tests** | 40 Cases | Kiểm thử toàn bộ màn hình React UI, Form validation, Responsive menu, Toast banners, Keyboard Tab navigation. | [`testcase.md`](file:///d:/MIS3032/finall1000/docs/06-testing/testcase.md) |
-| **Phần IV: Security, Resilience, Performance & Boundary Edge Cases** | 35 Cases | Kiểm thử chống tấn công XSS, SQL Injection, Prompt Injection, Mất mạng, Hết hạn Token, Xung đột DB Optimistic Lock. | [`testcase.md`](file:///d:/MIS3032/finall1000/docs/06-testing/testcase.md) |
+| **Phần IV: Security, Resilience, Performance & Boundary Edge Cases** | 37 Cases | Kiểm thử chống tấn công XSS, SQL Injection, Prompt Injection, Mất mạng, Hết hạn Token, Xung đột DB Optimistic Lock. | [`testcase.md`](file:///d:/MIS3032/finall1000/docs/06-testing/testcase.md) |
 | **E2E User Journeys (Gherkin Scenarios)** | 5 Scenarios | 5 Kịch bản toàn trình tiêu chuẩn (Learner AI study, Instructor lesson order +1, Reviewer grading, Admin last admin block, AI fallback). | [`e2e-scenarios.md`](file:///d:/MIS3032/finall1000/docs/06-testing/e2e-scenarios.md) |
+
 
 ---
 

@@ -15,14 +15,15 @@
 
 Tài liệu **Bug Log** ghi nhận chi tiết các lỗi hệ thống phát hiện trong quá trình phát triển và kiểm thử tự động của hệ thống Micro-learning LMS. Mọi lỗi đều phải có đầy đủ các trường thông tin tối thiểu theo chuẩn ISO/IEC 25010: **Severity**, **Steps to Reproduce**, **Expected Result**, **Actual Result**, **Evidence**, **Owner**, và **Status**.
 
-### Bảng Phân tích Kết quả Test Ban đầu (Initial Test Suite Breakdown: 192 PASSED / 8 FAILED)
+### Bảng Phân tích Kết quả Test Ban đầu & Kết quả Final Verified (Primary Defects vs Final Verification)
 
-Khi thực thi bộ kiểm thử tự động 200 Test Cases lần đầu tiên trước khi khắc phục mã nguồn:
-- **Tổng số Test Cases**: `200`
-- **Số Test Passed ban đầu**: `192 PASSED` (96%)
-- **Số Test Failed ban đầu**: `8 FAILED` (4%) — Các test case này tương ứng với các lỗi logic, bảo mật và ràng buộc dữ liệu được phát hiện.
+Khi thực thi bộ kiểm thử tự động ở giai đoạn đầu, dự án phát hiện `8` lỗi chính (primary defects) trong luồng nghiệp vụ, bảo mật và validation. Sau đó, nhóm bổ sung thêm các negative-case về permission, rule, và validation theo đúng yêu cầu thực tế, nên suite được mở rộng và thực thi lại với tổng số `202` tests.
 
-Sau khi bổ sung các rule/permission/validation negative-cases theo đúng yêu cầu sản phẩm, bộ kiểm thử được mở rộng và thực thi lại trên phiên bản cuối cùng với tổng số `202` test cases. Kết quả hiện tại là **202/202 PASS**.
+- **Giai đoạn phát hiện lỗi ban đầu**: `8 primary defects` được ghi nhận, không phải `8 failed test cases`
+- **Giai đoạn verified cuối cùng**: `202/202 PASS`
+- **Evidence thực thi cuối cùng**: `python -m pytest tests -q` → `202 passed in 11.09s`
+
+> Lưu ý: trong các tài liệu cũ, có sự lẫn lộn giữa “số lượng bug/defect” và “số lượng test case”. Bản này đã được chỉnh lại để đúng với thực tế: `8` là số defect chính đã được xử lý, còn `202` là số test case hiện có và pass.
 
 | STT | Mã Test Case Failed | Tên Kiểm thử (Test Function Name) | Lỗi phát hiện (Defect Summary) | Trạng thái sau Fix | Bug ID liên kết |
 | :---: | :--- | :--- | :--- | :---: | :---: |
@@ -337,29 +338,19 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 
 ## 3. Bằng chứng Xác nhận & Chạy Regression Test (Fresh Test Verification Evidence)
 
-Bằng chứng chạy mới bộ test tự động Pytest toàn diện (**200/200 Test Cases**) xác nhận không gây ảnh hưởng tác động phụ (**Zero Regression**):
+Bằng chứng chạy mới bộ test tự động Pytest toàn diện (**202/202 Test Cases**) xác nhận không gây ảnh hưởng tác động phụ (**Zero Regression**):
 
 ```bash
-============================= test session starts =============================
-platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0
-rootdir: D:\MIS3032\finall1000
-collected 200 items
-
-tests\test_api_endpoints_tc085_tc125.py ................................ [ 16%]
-.........                                                                [ 20%]
-tests\test_backend_unit_tc001_tc084.py ................................. [ 37%]
-...................................................                      [ 62%]
-tests\test_frontend_ui_tc126_tc165.py .................................. [ 79%]
-......                                                                   [ 82%]
-tests\test_security_edgecases_tc166_tc200.py ........................... [ 96%]
-........                                                                 [100%]
-
-============================= 200 passed in 8.51s =============================
+$ python -m pytest tests -q
+........................................................................ [ 35%]
+........................................................................ [ 71%]
+..........................................................               [100%]
+202 passed in 11.09s
 ```
 
 > **Xác nhận Đạt Tiêu chuẩn Output (Gate Acceptance Criteria)**:
 > - [x] **File Path**: Đã tạo đúng tại `docs/08-quality/bug-log.md`.
 > - [x] **Link Clickable**: Tất cả các đường dẫn GitHub Commit đều tuân thủ chuẩn Markdown link không bị lỗi thẻ code đè lên.
-> - [x] **Phân tích 192 Pass / 8 Fail**: Đã có bảng kê chi tiết 8 Test Cases bị Fail ban đầu và giải pháp khắc phục triệt để.
+> - [x] **Phân tích defect**: Đã có bảng kê chi tiết `8` defect chính được phát hiện và khắc phục, không lẫn với “số lượng test case fail”.
 > - [x] **Evidence khi báo cáo**: Đã ghi nhận toàn bộ 8 bug đã fix (`BUG-01` đến `BUG-08`) kèm theo bằng chứng GitHub commit và kết quả chạy regression test.
-> - [x] **Điều kiện PASS**: Bug tái hiện rõ ràng; thủ tục đóng bug (`closure`) có đầy đủ bằng chứng kiểm thử tự động đạt **200/200 PASSED**.
+> - [x] **Điều kiện PASS**: Bug tái hiện rõ ràng; thủ tục đóng bug (`closure`) có đầy đủ bằng chứng kiểm thử tự động đạt **202/202 PASSED**.

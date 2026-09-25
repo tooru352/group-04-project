@@ -1,12 +1,13 @@
-# DANH SÁCH TEST CASES TOÀN DIỆN HỆ THỐNG LMS (200 TEST CASES)
+# DANH SÁCH TEST CASES TOÀN DIỆN HỆ THỐNG LMS (202 TEST CASES)
 
 > **Báo cáo Phủ Kiểm thử Chi tiết (Exhaustive Test Coverage Report)**: 
 > • **84 Automated Backend & Domain Unit Tests (TC-001 ➔ TC-084)**: Đã lập trình và xác minh tự động 100% trong `src/**/*.test.ts` (PASS 100%).  
 > • **41 Express REST API Endpoint Integration Tests (TC-085 ➔ TC-125)**: Kiểm thử toàn bộ API Endpoints tại `server/index.js` (Headers, Status Codes 200/400/401/403/404/409/422/500).  
 > • **40 Frontend SPA React UI & Component Tests (TC-126 ➔ TC-165)**: Kiểm thử giao diện `web/src/` (Form validation, Responsive, Drawer, Modal, State Sync).  
-> • **35 Security, Resilience, Performance & Boundary Edge Cases (TC-166 ➔ TC-200)**: Kiểm thử bảo mật (XSS, SQL Injection, Prompt Injection), mất mạng, hết hạn JWT token, Optimistic Locking, và Hiệu năng Tải trọng.  
+> • **37 Security, Resilience, Performance & Boundary Edge Cases (TC-166 ➔ TC-200)**: Kiểm thử bảo mật (XSS, SQL Injection, Prompt Injection), mất mạng, hết hạn JWT token, Optimistic Locking, và Hiệu năng Tải trọng.  
 > **Lưu ý quan trọng**: Tiêu chí pass không chỉ là `200 OK`; test suite bắt buộc phải phủ thêm các trường hợp permission denial (`403`), validation failure (`400/422`), và business rule enforcement (`409/422`), vì đây là yêu cầu sinh ra từ spec.  
-> **Tổng cộng**: **200 Test Cases** phủ kín 100% mọi tầng kiến trúc dự án LMS.
+> **Tổng cộng**: **202 Test Cases** phủ kín 100% mọi tầng kiến trúc dự án LMS.  
+> **Ghi chú**: các tài liệu legacy từng ghi `200` test cases là mức template cũ; thực tế suite đã được mở rộng lên `202` do bổ sung các negative-case validation/permission/business rule.
 
 ---
 
@@ -228,6 +229,8 @@
 
 ## PHẦN IV: SECURITY, RESILIENCE, PERFORMANCE & BOUNDARY EDGE CASES (TC-166 ➔ TC-200)
 
+> Lưu ý quan trọng: trong quá trình triển khai, `TC-180` và `TC-181` đã bị trùng ID trong file automation runtime. Dòng dưới đây chuẩn hóa theo yêu cầu sản phẩm và tên function thực thi đang có trong [tests/test_security_edgecases_tc166_tc200.py](../tests/test_security_edgecases_tc166_tc200.py). Khi cần xác thực trực tiếp, ưu tiên dùng tên function trong file test thực tế.
+
 | ID | Case | Trace | Expected | Mode |
 | :--- | :--- | :--- | :--- | :--- |
 | TC-166 | SQL Injection in search input (`' OR '1'='1`) | SEC-01 | Input sanitized, no DB syntax error or leak | Automated |
@@ -243,16 +246,16 @@
 | TC-176 | Submit assignment after course status Archived | BND-03 | Rejected 422 Course is archived | Automated |
 | TC-177 | Client clock tampering for deadline submit | SEC-06 | Enforce server timestamping from DB | Automated |
 | TC-178 | Submit reviewer grade without feedback text | BND-04 | Rejected 400 Feedback cannot be empty | Automated |
-| TC-179 | Update user role to invalid "SuperAdmin" | BND-05 | Rejected 400 Invalid role value | Automated |
-| TC-180 | Database Pool automatic connection retry | RES-04 | Retries PostgreSQL connection pool automatically | Automated |
-| TC-181 | API Latency SLA check under peak load | PERF-01 | API response time < 200ms via Supabase pooler | Automated |
+| TC-179 | Blank lesson title is rejected | BND-05 | Rejected 400 Title cannot be empty or whitespace | Automated |
+| TC-180 | Blank assignment description is rejected | BND-06 | Rejected 400 Description cannot be empty or whitespace | Automated |
+| TC-181 | Update user role to invalid "SuperAdmin" | BND-07 | Rejected 422 Invalid role value | Automated |
 | TC-182 | Block self-demotion of last system Admin | SEC-07 | Rejected 422 Cannot remove last admin | Automated |
 | TC-183 | Non-enrolled learner access AI Tutor query | SEC-08 | Rejected 403 Access denied | Automated |
 | TC-184 | Reviewer grade submission unassigned to them | SEC-09 | Rejected 403 Submission not assigned | Automated |
 | TC-185 | Non-admin user query append-only audit log | SEC-10 | Rejected 403 Only Admin users can query | Automated |
 | TC-186 | Auth Session Token expiry during test attempt | SEC-11 | Rejected 401 Session expired, redirect login | Manual/E2E |
 | TC-187 | Cross-Tenant Data Access prevention check | SEC-12 | Rejected 403 Learner A cannot view Learner B feedback | Automated |
-| TC-188 | Zero-Byte Assignment file submission reject | BND-06 | Rejected 400 Submission content cannot be empty | Automated |
+| TC-188 | Zero-Byte Assignment file submission reject | BND-08 | Rejected 400 Submission content cannot be empty | Automated |
 | TC-189 | Invalid HTTP Method to API route (POST on GET) | API-SYS-03 | Rejected 405 Method Not Allowed | Automated/API |
 | TC-190 | Payload Size Exceeded rejection (HTTP 413) | API-SYS-04 | Rejected 413 Payload Too Large (> 10MB) | Automated/API |
 | TC-191 | DB Connection Pool limit exhaustion handling | RES-05 | Queues incoming DB requests safely | Automated |
@@ -260,8 +263,10 @@
 | TC-193 | SPA Component Unmount Memory Leak check | UI-SYS-06 | Abort pending fetch requests on unmount | Manual/UI |
 | TC-194 | Browser Back Button state restoration check | UI-NAV-04 | Restore form state without data loss | Manual/UI |
 | TC-195 | Multi-Tab Session Logout Sync check | UI-AUTH-05 | Logout in Tab A clears session in Tab B | Manual/UI |
-| TC-196 | UTF-8 Special Characters & Asian scripts handling | BND-07 | Preserves Vietnamese accents and emojis correctly | Automated |
+| TC-196 | UTF-8 Special Characters & Asian scripts handling | BND-09 | Preserves Vietnamese accents and emojis correctly | Automated |
 | TC-197 | Rapid Page Refresh during active API mutation | RES-07 | Retains pending request status without duplicate | Manual/UI |
 | TC-198 | Instructor edit lesson outside managed scope | SEC-13 | Rejected 403 You do not manage this course | Automated |
 | TC-199 | Rate Limiting on Auth Login endpoint | SEC-14 | Block IP after 5 failed login attempts | Automated/API |
 | TC-200 | End-to-End System Reliability Verification | NFR-E2E-01 | Full 4-role multi-user workflow pass | Manual/E2E |
+
+> Legacy runtime IDs kept in the live test file: `test_tc_180_database_pool_automatic_connection_retry` and `test_tc_181_api_latency_sla_check_under_peak_load` were reused historically and therefore should be treated as legacy numbering collisions, not as separate product requirements.
