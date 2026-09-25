@@ -4,8 +4,8 @@
 > **Đường dẫn file**: `docs/08-quality/bug-log.md`  
 > **Dự án**: Micro-learning / LMS Course Platform System (Group 04)  
 > **Quy trình áp dụng**: `REPRODUCE → LOG → FIX → VERIFY REGRESSION → CLOSE`  
-> **Link Commit Source Code Fix trên GitHub**: [`https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0) (`52718d0` - Sửa 3,988 dòng code JS/JSX)  
-> **Link Commit Test Automation Fix trên GitHub**: [`https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008) (`119123d` - Chạy 200/200 Pytest Pass)  
+> **Link Commit Source Code Fix (Do Thi Kim Yen)**: [Commit 24588d1](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1)  
+> **Link Commit Source Code Fix (Doan Xuan Toan)**: [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)  
 > **Trạng thái Gate Quality**: PASS (100% Closure có Evidence & 200/200 Automated Tests Passed)  
 
 ---
@@ -38,14 +38,14 @@ Khi thực thi bộ kiểm thử tự động 200 Test Cases lần đầu tiên 
 
 | Bug ID | Tên Lỗi / Mô tả (Title) | Mức độ (Severity) | Người xử lý (Owner) | Trạng thái (Status) | GitHub Fix Commit Link | Regression Test Case |
 | :---: | :--- | :---: | :---: | :---: | :--- | :--- |
-| **`BUG-01`** | Duplicate assignment submission on fast double-click submit button | **Major** | Do Thi Kim Yen | **CLOSED** | [`Commit 7f2156c (Tái Hiện Lỗi)`](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)<br>[`Commit 24588d1 (Fix Code)`](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1) | `test_tc_098_duplicate_submission_prevention` |
-| **`BUG-02`** | Role authorization bypass on `/api/instructor/*` REST endpoints | **Blocker** | Do Thi Kim Yen | **CLOSED** | [`Commit 7f2156c (Tái Hiện Lỗi)`](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)<br>[`Commit 24588d1 (Fix Code)`](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1) | `test_tc_166_rbac_instructor_endpoint_protection` |
-| **`BUG-03`** | Session state loss upon window reload during course management | **Blocker** | Do Thi Kim Yen | **CLOSED** | [`Commit 7f2156c (Tái Hiện Lỗi)`](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)<br>[`Commit 24588d1 (Fix Code)`](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1) | `test_tc_130_persistent_session_localstorage` |
-| **`BUG-04`** | New lesson `sort_order` assigned randomly instead of incremental position | **Major** | Do Thi Kim Yen | **CLOSED** | [`Commit 7f2156c (Tái Hiện Lỗi)`](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)<br>[`Commit 24588d1 (Fix Code)`](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1) | `test_tc_042_lesson_sort_order_increment` |
-| **`BUG-05`** | AI Tutor generates out-of-context response for un-enrolled learners | **Major** | Doan Xuan Toan | **CLOSED** | [`Commit 52718d0 (Fix Code)`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)<br>[`Commit 119123d (Test Pass)`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008) | `test_tc_102_aitutor_enrolled_context_check` |
-| **`BUG-06`** | Grade out-of-bounds (`score > 100` or `< 0`) accepted by Reviewer API | **Minor** | Doan Xuan Toan | **CLOSED** | [`Commit 52718d0 (Fix Code)`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)<br>[`Commit 119123d (Test Pass)`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008) | `test_tc_115_submission_grade_out_of_bound_validation` |
-| **`BUG-07`** | Unhandled course deletion when active learners are currently enrolled | **Major** | Doan Xuan Toan | **CLOSED** | [`Commit 52718d0 (Fix Code)`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)<br>[`Commit 119123d (Test Pass)`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008) | `test_tc_175_delete_course_with_active_enrolled_learners` |
-| **`BUG-08`** | Missing guard condition preventing self-demotion of last system admin | **Blocker** | Doan Xuan Toan | **CLOSED** | [`Commit 52718d0 (Fix Code)`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)<br>[`Commit 119123d (Test Pass)`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008) | `test_tc_182_block_self_demotion_of_last_system_admin` |
+| **`BUG-01`** | Duplicate assignment submission on fast double-click submit button | **Major** | Do Thi Kim Yen | **CLOSED** | [Commit 7f2156c (Lỗi Ban Đầu)](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)<br>[Commit 24588d1 (Fix Code)](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1) | `test_tc_098_duplicate_submission_prevention` |
+| **`BUG-02`** | Role authorization bypass on `/api/instructor/*` REST endpoints | **Blocker** | Do Thi Kim Yen | **CLOSED** | [Commit 7f2156c (Lỗi Ban Đầu)](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)<br>[Commit 24588d1 (Fix Code)](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1) | `test_tc_166_rbac_instructor_endpoint_protection` |
+| **`BUG-03`** | Session state loss upon window reload during course management | **Blocker** | Do Thi Kim Yen | **CLOSED** | [Commit 7f2156c (Lỗi Ban Đầu)](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)<br>[Commit 24588d1 (Fix Code)](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1) | `test_tc_130_persistent_session_localstorage` |
+| **`BUG-04`** | New lesson `sort_order` assigned randomly instead of incremental position | **Major** | Do Thi Kim Yen | **CLOSED** | [Commit 7f2156c (Lỗi Ban Đầu)](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)<br>[Commit 24588d1 (Fix Code)](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1) | `test_tc_042_lesson_sort_order_increment` |
+| **`BUG-05`** | AI Tutor generates out-of-context response for un-enrolled learners | **Major** | Doan Xuan Toan | **CLOSED** | [Commit 52718d0 (Fix Code)](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)<br>[Commit 119123d (Test Pass)](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008) | `test_tc_102_aitutor_enrolled_context_check` |
+| **`BUG-06`** | Grade out-of-bounds (`score > 100` or `< 0`) accepted by Reviewer API | **Minor** | Doan Xuan Toan | **CLOSED** | [Commit 52718d0 (Fix Code)](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)<br>[Commit 119123d (Test Pass)](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008) | `test_tc_115_submission_grade_out_of_bound_validation` |
+| **`BUG-07`** | Unhandled course deletion when active learners are currently enrolled | **Major** | Doan Xuan Toan | **CLOSED** | [Commit 52718d0 (Fix Code)](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)<br>[Commit 119123d (Test Pass)](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008) | `test_tc_175_delete_course_with_active_enrolled_learners` |
+| **`BUG-08`** | Missing guard condition preventing self-demotion of last system admin | **Blocker** | Doan Xuan Toan | **CLOSED** | [Commit 52718d0 (Fix Code)](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)<br>[Commit 119123d (Test Pass)](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008) | `test_tc_182_block_self_demotion_of_last_system_admin` |
 
 ---
 
@@ -79,8 +79,8 @@ Khi thực thi bộ kiểm thử tự động 200 Test Cases lần đầu tiên 
 - Phía Server (`server/index.js`): REST API Endpoint chưa cài đặt `Idempotency Key` / Unique Constraint theo cặp khóa `(user_id, assignment_id)`.
 
 #### 4. Giải pháp Khắc phục (Solution & Code Fix):
-- **Client Fix**: Bổ sung state `isSubmitting` để vô hiệu hóa nút submit ngay khi bắt đầu gửi request trong [`LearnerModuleView.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/learner/LearnerModuleView.jsx).
-- **Server Fix**: Thêm Idempotency check và kiểm tra bản ghi bài nộp đã tồn tại trước khi chèn mới trong [`server/index.js`](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
+- **Client Fix**: Bổ sung state `isSubmitting` để vô hiệu hóa nút submit ngay khi bắt đầu gửi request trong [LearnerModuleView.jsx](https://github.com/tooru352/group-04-project/blob/main/web/src/app/learner/LearnerModuleView.jsx).
+- **Server Fix**: Thêm Idempotency check và kiểm tra bản ghi bài nộp đã tồn tại trước khi chèn mới trong [server/index.js](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
 
 ```javascript
 // Phía Server: Idempotency & Duplicate Check
@@ -95,8 +95,9 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 ```
 
 #### 5. Bằng chứng Báo cáo & Kiểm chứng Đóng Bug (Closure Evidence & Regression Test):
-- **Commit GitHub Fix**: [`https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
-- **File Regression Test**: [`tests/test_api_endpoints_tc085_tc125.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_api_endpoints_tc085_tc125.py)
+- **Commit GitHub Tái hiện Lỗi**: [Commit 7f2156c](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)
+- **Commit GitHub Fix Code**: [Commit 24588d1](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1)
+- **File Regression Test**: [tests/test_api_endpoints_tc085_tc125.py](https://github.com/tooru352/group-04-project/blob/main/tests/test_api_endpoints_tc085_tc125.py)
 - **Hàm Test Khắc phục Bug**: `test_tc_098_duplicate_submission_prevention` & `test_tc_099_submit_assignment`
 - **Kết quả Pytest Run**: **`PASSED`**
 
@@ -107,7 +108,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Bug ID**: `BUG-02`
 - **Mức độ (Severity)**: **Blocker**
 - **Môi trường (Environment)**: Staging / Backend REST API (`/api/instructor/*`)
-- **Người chịu trách nhiệm (Owner)**: Dev Team
+- **Người chịu trách nhiệm (Owner)**: Do Thi Kim Yen (`dothikimyen8883@gmail.com`)
 - **Trạng thái (Status)**: **CLOSED (Verified Fixed)**
 
 #### 1. Các bước Tái hiện (Steps to Reproduce):
@@ -121,11 +122,12 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 
 #### 3. Root Cause & Solution:
 - Phía Backend HTTP handler chưa bọc middleware `requireRole`.
-- **Code Fix**: Thêm middleware `requireRole('Instructor', 'Admin')` tại [`server/index.js`](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
+- **Code Fix**: Thêm middleware `requireRole('Instructor', 'Admin')` tại [server/index.js](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
 
 #### 4. Evidence & Regression Test:
-- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
-- **Automated Regression Test**: `test_tc_166_rbac_instructor_endpoint_protection` trong [`tests/test_security_edgecases_tc166_tc200.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_security_edgecases_tc166_tc200.py) (`PASSED`).
+- **Commit GitHub Tái hiện Lỗi**: [Commit 7f2156c](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)
+- **Commit GitHub Fix Code**: [Commit 24588d1](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1)
+- **Automated Regression Test**: `test_tc_166_rbac_instructor_endpoint_protection` trong [tests/test_security_edgecases_tc166_tc200.py](https://github.com/tooru352/group-04-project/blob/main/tests/test_security_edgecases_tc166_tc200.py) (`PASSED`).
 
 ---
 
@@ -134,7 +136,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Bug ID**: `BUG-03`
 - **Mức độ (Severity)**: **Blocker**
 - **Môi trường (Environment)**: Frontend Client (`web/src/App.jsx`)
-- **Người chịu trách nhiệm (Owner)**: Frontend Lead
+- **Người chịu trách nhiệm (Owner)**: Do Thi Kim Yen (`dothikimyen8883@gmail.com`)
 - **Trạng thái (Status)**: **CLOSED (Verified Fixed)**
 
 #### 1. Các bước Tái hiện (Steps to Reproduce):
@@ -148,11 +150,12 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 
 #### 3. Root Cause & Solution:
 - Ứng dụng lạm dụng `window.location.reload()`, làm mất biến State đệm trong RAM.
-- **Code Fix**: Chuyển sang lưu trữ token & session bền vững vào `localStorage` (`lms_session`) và cập nhật React State trong [`web/src/App.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/App.jsx).
+- **Code Fix**: Chuyển sang lưu trữ token & session bền vững vào `localStorage` (`lms_session`) và cập nhật React State trong [web/src/App.jsx](https://github.com/tooru352/group-04-project/blob/main/web/src/App.jsx).
 
 #### 4. Evidence & Regression Test:
-- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
-- **Automated Regression Test**: `test_tc_130_persistent_session_localstorage` trong [`tests/test_frontend_ui_tc126_tc165.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_frontend_ui_tc126_tc165.py) (`PASSED`).
+- **Commit GitHub Tái hiện Lỗi**: [Commit 7f2156c](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)
+- **Commit GitHub Fix Code**: [Commit 24588d1](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1)
+- **Automated Regression Test**: `test_tc_130_persistent_session_localstorage` trong [tests/test_frontend_ui_tc126_tc165.py](https://github.com/tooru352/group-04-project/blob/main/tests/test_frontend_ui_tc126_tc165.py) (`PASSED`).
 
 ---
 
@@ -161,7 +164,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Bug ID**: `BUG-04`
 - **Mức độ (Severity)**: **Major**
 - **Môi trường (Environment)**: Backend Database Service (`InstructorModuleView.jsx`)
-- **Người chịu trách nhiệm (Owner)**: Backend Lead
+- **Người chịu trách nhiệm (Owner)**: Do Thi Kim Yen (`dothikimyen8883@gmail.com`)
 - **Trạng thái (Status)**: **CLOSED (Verified Fixed)**
 
 #### 1. Các bước Tái hiện (Steps to Reproduce):
@@ -175,11 +178,12 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 
 #### 3. Root Cause & Solution:
 - Câu lệnh SQL INSERT bài học chưa tính toán giá trị vị trí lớn nhất hiện tại.
-- **Code Fix**: Tính toán `sort_order = COALESCE(MAX(sort_order), 0) + 1` trực tiếp trước khi INSERT bài học mới trong [`InstructorModuleView.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/instructor/InstructorModuleView.jsx).
+- **Code Fix**: Tính toán `sort_order = COALESCE(MAX(sort_order), 0) + 1` trực tiếp trước khi INSERT bài học mới trong [InstructorModuleView.jsx](https://github.com/tooru352/group-04-project/blob/main/web/src/app/instructor/InstructorModuleView.jsx).
 
 #### 4. Evidence & Regression Test:
-- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
-- **Automated Regression Test**: `test_tc_042_lesson_sort_order_increment` trong [`tests/test_backend_unit_tc001_tc084.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_backend_unit_tc001_tc084.py) (`PASSED`).
+- **Commit GitHub Tái hiện Lỗi**: [Commit 7f2156c](https://github.com/tooru352/group-04-project/commit/7f2156ceec55b40cfeb5ca5657efea4b16259e88)
+- **Commit GitHub Fix Code**: [Commit 24588d1](https://github.com/tooru352/group-04-project/commit/24588d169d30ca784260a28f4bc172cfd8350aa1)
+- **Automated Regression Test**: `test_tc_042_lesson_sort_order_increment` trong [tests/test_backend_unit_tc001_tc084.py](https://github.com/tooru352/group-04-project/blob/main/tests/test_backend_unit_tc001_tc084.py) (`PASSED`).
 
 ---
 
@@ -188,7 +192,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Bug ID**: `BUG-05`
 - **Mức độ (Severity)**: **Major**
 - **Môi trường (Environment)**: AI Assistant Component (`AiTutorChatBox.jsx`)
-- **Người chịu trách nhiệm (Owner)**: AI Lead
+- **Người chịu trách nhiệm (Owner)**: Doan Xuan Toan (`doanxuantoan@gmail.com`)
 - **Trạng thái (Status)**: **CLOSED (Verified Fixed)**
 
 #### 1. Các bước Tái hiện (Steps to Reproduce):
@@ -201,11 +205,11 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 
 #### 3. Root Cause & Solution:
 - Thiếu bước xác thực danh sách `enrolledLessonIds` trước khi truyền ngữ cảnh vào mô hình AI.
-- **Code Fix**: Thêm validator kiểm tra enrollment và vai trò người dùng trong [`AiTutorChatBox.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/learner/AiTutorChatBox.jsx).
+- **Code Fix**: Thêm validator kiểm tra enrollment và vai trò người dùng trong [AiTutorChatBox.jsx](https://github.com/tooru352/group-04-project/blob/main/web/src/app/learner/AiTutorChatBox.jsx).
 
 #### 4. Evidence & Regression Test:
-- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
-- **Automated Regression Test**: `test_tc_102_aitutor_enrolled_context_check` trong [`tests/test_api_endpoints_tc085_tc125.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_api_endpoints_tc085_tc125.py) (`PASSED`).
+- **GitHub Commit**: [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)
+- **Automated Regression Test**: `test_tc_102_aitutor_enrolled_context_check` trong [tests/test_api_endpoints_tc085_tc125.py](https://github.com/tooru352/group-04-project/blob/main/tests/test_api_endpoints_tc085_tc125.py) (`PASSED`).
 
 ---
 
@@ -214,7 +218,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Bug ID**: `BUG-06`
 - **Mức độ (Severity)**: **Minor**
 - **Môi trường (Environment)**: Reviewer Module (`ReviewerModuleView.jsx`)
-- **Người chịu trách nhiệm (Owner)**: QA Tester
+- **Người chịu trách nhiệm (Owner)**: Doan Xuan Toan (`doanxuantoan@gmail.com`)
 - **Trạng thái (Status)**: **CLOSED (Verified Fixed)**
 
 #### 1. Các bước Tái hiện (Steps to Reproduce):
@@ -228,11 +232,11 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 
 #### 3. Root Cause & Solution:
 - Hàm xử lý chấm điểm thiếu câu lệnh kiểm tra hợp lệ khoảng giá trị điểm (`0 <= score <= 100`).
-- **Code Fix**: Thêm validation check bắt buộc tại [`ReviewerModuleView.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/reviewer/ReviewerModuleView.jsx).
+- **Code Fix**: Thêm validation check bắt buộc tại [ReviewerModuleView.jsx](https://github.com/tooru352/group-04-project/blob/main/web/src/app/reviewer/ReviewerModuleView.jsx).
 
 #### 4. Evidence & Regression Test:
-- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
-- **Automated Regression Test**: `test_tc_115_submission_grade_out_of_bound_validation` trong [`tests/test_api_endpoints_tc085_tc125.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_api_endpoints_tc085_tc125.py) (`PASSED`).
+- **GitHub Commit**: [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)
+- **Automated Regression Test**: `test_tc_115_submission_grade_out_of_bound_validation` trong [tests/test_api_endpoints_tc085_tc125.py](https://github.com/tooru352/group-04-project/blob/main/tests/test_api_endpoints_tc085_tc125.py) (`PASSED`).
 
 ---
 
@@ -241,7 +245,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Bug ID**: `BUG-07`
 - **Mức độ (Severity)**: **Major**
 - **Môi trường (Environment)**: Course Management API (`server/index.js`)
-- **Người chịu trách nhiệm (Owner)**: Backend Dev
+- **Người chịu trách nhiệm (Owner)**: Doan Xuan Toan (`doanxuantoan@gmail.com`)
 - **Trạng thái (Status)**: **CLOSED (Verified Fixed)**
 
 #### 1. Các bước Tái hiện (Steps to Reproduce):
@@ -253,10 +257,10 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Actual**: Khóa học bị xóa lập tức, gây ra rác CSDL (orphaned enrollments).
 
 #### 3. Root Cause & Solution:
-- Thêm kiểm tra đếm số bản ghi `enrollments` hoạt động trước khi thực hiện DELETE query trong [`server/index.js`](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
+- Thêm kiểm tra đếm số bản ghi `enrollments` hoạt động trước khi thực hiện DELETE query trong [server/index.js](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
 
 #### 4. Evidence & Regression Test:
-- **Automated Regression Test**: `test_tc_175_delete_course_with_active_enrolled_learners` trong [`tests/test_security_edgecases_tc166_tc200.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_security_edgecases_tc166_tc200.py) (`PASSED`).
+- **Automated Regression Test**: `test_tc_175_delete_course_with_active_enrolled_learners` trong [tests/test_security_edgecases_tc166_tc200.py](https://github.com/tooru352/group-04-project/blob/main/tests/test_security_edgecases_tc166_tc200.py) (`PASSED`).
 
 ---
 
@@ -265,7 +269,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Bug ID**: `BUG-08`
 - **Mức độ (Severity)**: **Blocker**
 - **Môi trường (Environment)**: Admin User Management (`server/index.js`)
-- **Người chịu trách nhiệm (Owner)**: Security Lead
+- **Người chịu trách nhiệm (Owner)**: Doan Xuan Toan (`doanxuantoan@gmail.com`)
 - **Trạng thái (Status)**: **CLOSED (Verified Fixed)**
 
 #### 1. Các bước Tái hiện (Steps to Reproduce):
@@ -277,10 +281,10 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Actual**: Thay đổi quyền thành công, làm hệ thống rơi vào trạng thái không còn Admin nào quản trị.
 
 #### 3. Root Cause & Solution:
-- Đã thêm kiểm tra đếm tổng số Admin hệ thống trước khi cho phép thay đổi role trong [`server/index.js`](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
+- Đã thêm kiểm tra đếm tổng số Admin hệ thống trước khi cho phép thay đổi role trong [server/index.js](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
 
 #### 4. Evidence & Regression Test:
-- **Automated Regression Test**: `test_tc_182_block_self_demotion_of_last_system_admin` trong [`tests/test_security_edgecases_tc166_tc200.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_security_edgecases_tc166_tc200.py) (`PASSED`).
+- **Automated Regression Test**: `test_tc_182_block_self_demotion_of_last_system_admin` trong [tests/test_security_edgecases_tc166_tc200.py](https://github.com/tooru352/group-04-project/blob/main/tests/test_security_edgecases_tc166_tc200.py) (`PASSED`).
 
 ---
 
@@ -308,7 +312,7 @@ tests\test_security_edgecases_tc166_tc200.py ........................... [ 96%]
 
 > **Xác nhận Đạt Tiêu chuẩn Output (Gate Acceptance Criteria)**:
 > - [x] **File Path**: Đã tạo đúng tại `docs/08-quality/bug-log.md`.
+> - [x] **Link Clickable**: Tất cả các đường dẫn GitHub Commit đều tuân thủ chuẩn Markdown link không bị lỗi thẻ code đè lên.
 > - [x] **Phân tích 192 Pass / 8 Fail**: Đã có bảng kê chi tiết 8 Test Cases bị Fail ban đầu và giải pháp khắc phục triệt để.
-> - [x] **Nội dung tối thiểu**: Đầy đủ `Severity`, `steps`, `expected/actual`, `evidence`, `owner`, `status`.
 > - [x] **Evidence khi báo cáo**: Đã ghi nhận toàn bộ 8 bug đã fix (`BUG-01` đến `BUG-08`) kèm theo bằng chứng GitHub commit và kết quả chạy regression test.
 > - [x] **Điều kiện PASS**: Bug tái hiện rõ ràng; thủ tục đóng bug (`closure`) có đầy đủ bằng chứng kiểm thử tự động đạt **200/200 PASSED**.
