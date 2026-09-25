@@ -4,8 +4,8 @@
 > **Đường dẫn file**: `docs/08-quality/bug-log.md`  
 > **Dự án**: Micro-learning / LMS Course Platform System (Group 04)  
 > **Quy trình áp dụng**: `REPRODUCE → LOG → FIX → VERIFY REGRESSION → CLOSE`  
-> **Link Commit Code Fix trên GitHub**: [`https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)  
-> **Commit Hash**: `52718d06b724f590dd174cd59db7d8df5caf7eb0`  
+> **Link Commit Code Fix trên GitHub**: [`https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)  
+> **Commit Hash**: `119123d3ca55e42b4c88499c55c6d769e8bce008`  
 > **Trạng thái Gate Quality**: PASS (100% Closure có Evidence & 200/200 Automated Tests Passed)  
 
 ---
@@ -95,7 +95,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 ```
 
 #### 5. Bằng chứng Báo cáo & Kiểm chứng Đóng Bug (Closure Evidence & Regression Test):
-- **Commit GitHub Fix**: [`https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)
+- **Commit GitHub Fix**: [`https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
 - **File Regression Test**: [`tests/test_api_endpoints_tc085_tc125.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_api_endpoints_tc085_tc125.py)
 - **Hàm Test Khắc phục Bug**: `test_tc_098_duplicate_submission_prevention` & `test_tc_099_submit_assignment`
 - **Kết quả Pytest Run**: **`PASSED`**
@@ -124,7 +124,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Code Fix**: Thêm middleware `requireRole('Instructor', 'Admin')` tại [`server/index.js`](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
 
 #### 4. Evidence & Regression Test:
-- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)
+- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
 - **Automated Regression Test**: `test_tc_166_rbac_instructor_endpoint_protection` trong [`tests/test_security_edgecases_tc166_tc200.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_security_edgecases_tc166_tc200.py) (`PASSED`).
 
 ---
@@ -151,7 +151,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Code Fix**: Chuyển sang lưu trữ token & session bền vững vào `localStorage` (`lms_session`) và cập nhật React State trong [`web/src/App.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/App.jsx).
 
 #### 4. Evidence & Regression Test:
-- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)
+- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
 - **Automated Regression Test**: `test_tc_130_persistent_session_localstorage` trong [`tests/test_frontend_ui_tc126_tc165.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_frontend_ui_tc126_tc165.py) (`PASSED`).
 
 ---
@@ -178,7 +178,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Code Fix**: Tính toán `sort_order = COALESCE(MAX(sort_order), 0) + 1` trực tiếp trước khi INSERT bài học mới trong [`InstructorModuleView.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/instructor/InstructorModuleView.jsx).
 
 #### 4. Evidence & Regression Test:
-- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)
+- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
 - **Automated Regression Test**: `test_tc_042_lesson_sort_order_increment` trong [`tests/test_backend_unit_tc001_tc084.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_backend_unit_tc001_tc084.py) (`PASSED`).
 
 ---
@@ -204,7 +204,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Code Fix**: Thêm validator kiểm tra enrollment và vai trò người dùng trong [`AiTutorChatBox.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/learner/AiTutorChatBox.jsx).
 
 #### 4. Evidence & Regression Test:
-- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)
+- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
 - **Automated Regression Test**: `test_tc_102_aitutor_enrolled_context_check` trong [`tests/test_api_endpoints_tc085_tc125.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_api_endpoints_tc085_tc125.py) (`PASSED`).
 
 ---
@@ -231,7 +231,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Code Fix**: Thêm validation check bắt buộc tại [`ReviewerModuleView.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/reviewer/ReviewerModuleView.jsx).
 
 #### 4. Evidence & Regression Test:
-- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)
+- **GitHub Commit**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008)
 - **Automated Regression Test**: `test_tc_115_submission_grade_out_of_bound_validation` trong [`tests/test_api_endpoints_tc085_tc125.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_api_endpoints_tc085_tc125.py) (`PASSED`).
 
 ---
