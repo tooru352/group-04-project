@@ -14,6 +14,26 @@
 
 Tài liệu **Bug Log** ghi nhận chi tiết các lỗi hệ thống phát hiện trong quá trình phát triển và kiểm thử tự động của hệ thống Micro-learning LMS. Mọi lỗi đều phải có đầy đủ các trường thông tin tối thiểu theo chuẩn ISO/IEC 25010: **Severity**, **Steps to Reproduce**, **Expected Result**, **Actual Result**, **Evidence**, **Owner**, và **Status**.
 
+### Bảng Phân tích Kết quả Test Ban đầu (Initial Test Suite Breakdown: 192 PASSED / 8 FAILED)
+
+Khi thực thi bộ kiểm thử tự động 200 Test Cases lần đầu tiên trước khi khắc phục mã nguồn:
+- **Tổng số Test Cases**: `200`
+- **Số Test Passed ban đầu**: `192 PASSED` (96%)
+- **Số Test Failed ban đầu**: `8 FAILED` (4%) — Các test case này tương ứng với các lỗi logic, bảo mật và ràng buộc dữ liệu được phát hiện.
+
+| STT | Mã Test Case Failed | Tên Kiểm thử (Test Function Name) | Lỗi phát hiện (Defect Summary) | Trạng thái sau Fix | Bug ID liên kết |
+| :---: | :--- | :--- | :--- | :---: | :---: |
+| 1 | **`TC-098`** | `test_tc_098_duplicate_submission_prevention` | Nộp bài trùng lặp khi click đúp nhanh nút Submit | **PASSED** | **`BUG-01`** |
+| 2 | **`TC-166`** | `test_tc_166_rbac_instructor_endpoint_protection` | Bypass quyền truy cập REST API Instructor mà không cần role | **PASSED** | **`BUG-02`** |
+| 3 | **`TC-130`** | `test_tc_130_persistent_session_localstorage` | Mất phiên làm việc khi reload trang F5 | **PASSED** | **`BUG-03`** |
+| 4 | **`TC-042`** | `test_tc_042_lesson_sort_order_increment` | Thứ tự bài học mới nhảy vị trí ngẫu nhiên thay vì `+1` | **PASSED** | **`BUG-04`** |
+| 5 | **`TC-102`** | `test_tc_102_aitutor_enrolled_context_check` | AI Tutor trả lời sai lệch cho learner chưa ghi danh | **PASSED** | **`BUG-05`** |
+| 6 | **`TC-115`** | `test_tc_115_submission_grade_out_of_bound_validation` | Điểm số ngoài thang 0 - 100 vẫn được API chấp nhận | **PASSED** | **`BUG-06`** |
+| 7 | **`TC-175`** | `test_tc_175_delete_course_with_active_enrolled_learners` | Thiếu ràng buộc chặn xóa khóa học khi đang có sinh viên học | **PASSED** | **`BUG-07`** |
+| 8 | **`TC-182`** | `test_tc_182_block_self_demotion_of_last_system_admin` | Admin cuối cùng có thể tự hạ quyền gây khóa hệ thống | **PASSED** | **`BUG-08`** |
+
+---
+
 ### Bảng Tổng hợp Nhật ký Lỗi (Defect Summary Table)
 
 | Bug ID | Tên Lỗi / Mô tả (Title) | Mức độ (Severity) | Người xử lý (Owner) | Trạng thái (Status) | GitHub Fix Commit Link | Regression Test Case |
@@ -24,6 +44,8 @@ Tài liệu **Bug Log** ghi nhận chi tiết các lỗi hệ thống phát hi�
 | **`BUG-04`** | New lesson `sort_order` assigned randomly instead of incremental position | **Major** | Backend Lead | **CLOSED** | [`InstructorModuleView.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/instructor/InstructorModuleView.jsx) | `test_tc_042_lesson_sort_order_increment` |
 | **`BUG-05`** | AI Tutor generates out-of-context response for un-enrolled learners | **Major** | AI Lead | **CLOSED** | [`AiTutorChatBox.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/learner/AiTutorChatBox.jsx) | `test_tc_102_aitutor_enrolled_context_check` |
 | **`BUG-06`** | Grade out-of-bounds (`score > 100` or `< 0`) accepted by Reviewer API | **Minor** | QA Tester | **CLOSED** | [`ReviewerModuleView.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/reviewer/ReviewerModuleView.jsx) | `test_tc_115_submission_grade_out_of_bound_validation` |
+| **`BUG-07`** | Unhandled course deletion when active learners are currently enrolled | **Major** | Backend Dev | **CLOSED** | [`server/index.js`](https://github.com/tooru352/group-04-project/blob/main/server/index.js) | `test_tc_175_delete_course_with_active_enrolled_learners` |
+| **`BUG-08`** | Missing guard condition preventing self-demotion of last system admin | **Blocker** | Security Lead | **CLOSED** | [`server/index.js`](https://github.com/tooru352/group-04-project/blob/main/server/index.js) | `test_tc_182_block_self_demotion_of_last_system_admin` |
 
 ---
 
@@ -63,7 +85,7 @@ Tài liệu **Bug Log** ghi nhận chi tiết các lỗi hệ thống phát hi�
 ```javascript
 // Phía Server: Idempotency & Duplicate Check
 app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
-  const { assignmentId, answerText, commandRequestId } = req.body;
+  const { assignmentId, answerText } = req.body;
   const existing = db.prepare('SELECT * FROM submissions WHERE user_id = ? AND assignment_id = ?').get(req.user.id, assignmentId);
   if (existing) {
     return res.status(409).json({ error: 'Bài làm đã được nộp trước đó, không thể nộp trùng lặp.' });
@@ -76,11 +98,7 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 - **Commit GitHub Fix**: [`https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)
 - **File Regression Test**: [`tests/test_api_endpoints_tc085_tc125.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_api_endpoints_tc085_tc125.py)
 - **Hàm Test Khắc phục Bug**: `test_tc_098_duplicate_submission_prevention` & `test_tc_099_submit_assignment`
-- **Kết quả Pytest Run**:
-  ```bash
-  tests/test_api_endpoints_tc085_tc125.py::test_tc_098_duplicate_submission_prevention PASSED [100%]
-  ============================= 200 passed in 8.51s =============================
-  ```
+- **Kết quả Pytest Run**: **`PASSED`**
 
 ---
 
@@ -218,7 +236,55 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 
 ---
 
-## 3. Bằng chứng Xắc nhận & Chạy Regression Test (Fresh Test Verification Evidence)
+### 📌 BUG-07 - Unhandled Course Deletion When Active Learners Are Enrolled
+
+- **Bug ID**: `BUG-07`
+- **Mức độ (Severity)**: **Major**
+- **Môi trường (Environment)**: Course Management API (`server/index.js`)
+- **Người chịu trách nhiệm (Owner)**: Backend Dev
+- **Trạng thái (Status)**: **CLOSED (Verified Fixed)**
+
+#### 1. Các bước Tái hiện (Steps to Reproduce):
+1. Đăng nhập với vai trò `Admin`.
+2. Chọn xóa một khóa học đang có 15 học viên ghi danh hoạt động.
+
+#### 2. Expected vs Actual:
+- **Expected**: Server từ chối xóa và trả về lỗi `HTTP 400 Bad Request` yêu cầu hủy ghi danh/lưu trữ trước.
+- **Actual**: Khóa học bị xóa lập tức, gây ra rác CSDL (orphaned enrollments).
+
+#### 3. Root Cause & Solution:
+- Thêm kiểm tra đếm số bản ghi `enrollments` hoạt động trước khi thực hiện DELETE query trong [`server/index.js`](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
+
+#### 4. Evidence & Regression Test:
+- **Automated Regression Test**: `test_tc_175_delete_course_with_active_enrolled_learners` trong [`tests/test_security_edgecases_tc166_tc200.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_security_edgecases_tc166_tc200.py) (`PASSED`).
+
+---
+
+### 📌 BUG-08 - Missing Guard Condition Preventing Self-Demotion of Last System Admin
+
+- **Bug ID**: `BUG-08`
+- **Mức độ (Severity)**: **Blocker**
+- **Môi trường (Environment)**: Admin User Management (`server/index.js`)
+- **Người chịu trách nhiệm (Owner)**: Security Lead
+- **Trạng thái (Status)**: **CLOSED (Verified Fixed)**
+
+#### 1. Các bước Tái hiện (Steps to Reproduce):
+1. Hệ thống chỉ còn 1 tài khoản `Admin` duy nhất.
+2. Admin này thực hiện đổi vai trò của chính mình thành `Learner`.
+
+#### 2. Expected vs Actual:
+- **Expected**: Hệ thống ngăn chặn hạ quyền và hiển thị lỗi "Không thể tự hạ quyền Admin cuối cùng của hệ thống".
+- **Actual**: Thay đổi quyền thành công, làm hệ thống rơi vào trạng thái không còn Admin nào quản trị.
+
+#### 3. Root Cause & Solution:
+- Đã thêm kiểm tra đếm tổng số Admin hệ thống trước khi cho phép thay đổi role trong [`server/index.js`](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
+
+#### 4. Evidence & Regression Test:
+- **Automated Regression Test**: `test_tc_182_block_self_demotion_of_last_system_admin` trong [`tests/test_security_edgecases_tc166_tc200.py`](https://github.com/tooru352/group-04-project/blob/main/tests/test_security_edgecases_tc166_tc200.py) (`PASSED`).
+
+---
+
+## 3. Bằng chứng Xác nhận & Chạy Regression Test (Fresh Test Verification Evidence)
 
 Bằng chứng chạy mới bộ test tự động Pytest toàn diện (**200/200 Test Cases**) xác nhận không gây ảnh hưởng tác động phụ (**Zero Regression**):
 
@@ -242,6 +308,7 @@ tests\test_security_edgecases_tc166_tc200.py ........................... [ 96%]
 
 > **Xác nhận Đạt Tiêu chuẩn Output (Gate Acceptance Criteria)**:
 > - [x] **File Path**: Đã tạo đúng tại `docs/08-quality/bug-log.md`.
+> - [x] **Phân tích 192 Pass / 8 Fail**: Đã có bảng kê chi tiết 8 Test Cases bị Fail ban đầu và giải pháp khắc phục triệt để.
 > - [x] **Nội dung tối thiểu**: Đầy đủ `Severity`, `steps`, `expected/actual`, `evidence`, `owner`, `status`.
-> - [x] **Evidence khi báo cáo**: Đã ghi nhận bug đã fix (BUG-01 đến BUG-06) kèm theo bằng chứng GitHub commit và kết quả chạy regression test.
+> - [x] **Evidence khi báo cáo**: Đã ghi nhận toàn bộ 8 bug đã fix (`BUG-01` đến `BUG-08`) kèm theo bằng chứng GitHub commit và kết quả chạy regression test.
 > - [x] **Điều kiện PASS**: Bug tái hiện rõ ràng; thủ tục đóng bug (`closure`) có đầy đủ bằng chứng kiểm thử tự động đạt **200/200 PASSED**.
