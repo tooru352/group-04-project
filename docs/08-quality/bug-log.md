@@ -292,6 +292,49 @@ app.post('/api/submissions', requireRole('Learner', 'Admin'), (req, res) => {
 
 ---
 
+### 📌 BUG-09 - Whitespace-only Required Fields Were Accepted as Valid Input
+
+- **Bug ID**: `BUG-09`
+- **Mức độ (Severity)**: **Major**
+- **Môi trường (Environment)**: Backend API validation layer (`server/index.js`)
+- **Người chịu trách nhiệm (Owner)**: Doan Xuan Toan (`doanxuantoan@gmail.com`)
+- **Trạng thái (Status)**: **CLOSED (Verified Fixed)**
+
+#### 1. Các bước Tái hiện (Steps to Reproduce):
+1. Đăng nhập với vai trò `Instructor` hoặc `Admin`.
+2. Gửi request tạo bài học mới với payload:
+   - `title: "   "`
+   - `content: "Valid content"`
+3. Gửi request tạo assignment mới với payload:
+   - `title: "Valid Title"`
+   - `description: "   "`
+4. Gửi request chấm điểm với payload:
+   - `grade: 85`
+   - `feedback: "   "`
+5. Kiểm tra kết quả HTTP trả về từ API.
+
+#### 2. Expected vs Actual:
+- **Expected**: Hệ thống phải coi các ô bắt buộc là không hợp lệ nếu chỉ chứa khoảng trắng. API nên trả về `HTTP 400 Bad Request` với thông báo rõ ràng như "Feedback is required." hoặc "courseId, title, and content are required.".
+- **Actual**: Hệ thống chấp nhận giá trị khoảng trắng như dữ liệu hợp lệ, lưu vào database hoặc cập nhật trạng thái thành công, dẫn đến dữ liệu không hợp lệ và khó kiểm soát chất lượng nội dung.
+
+#### 3. Root Cause & Solution:
+- Root cause: các handler phía server chỉ kiểm tra `if (!title)` hoặc `if (!description)`, nhưng không dùng `trim()` để loại bỏ khoảng trắng. Do đó chuỗi chỉ có dấu cách vẫn được phép đi qua kiểm tra.
+- Fix: thêm helper `hasMeaningfulText()` và validate trước khi lưu:
+  - `typeof title === 'string' ? title.trim() : ''`
+  - `typeof feedback === 'string' ? feedback.trim() : ''`
+  - nếu `trim().length === 0` thì trả về `400`.
+- Code fix nằm tại [server/index.js](https://github.com/tooru352/group-04-project/blob/main/server/index.js).
+
+#### 4. Evidence & Regression Test:
+- **Automated Regression Test**:
+  - `test_tc_178_submit_reviewer_grade_without_feedback_text`
+  - `test_tc_179_blank_lesson_title_is_rejected`
+  - `test_tc_180_blank_assignment_description_is_rejected`
+  trong [tests/test_security_edgecases_tc166_tc200.py](https://github.com/tooru352/group-04-project/blob/main/tests/test_security_edgecases_tc166_tc200.py)
+- **Kết quả**: `PASSED` sau khi fix.
+
+---
+
 ## 3. Bằng chứng Xác nhận & Chạy Regression Test (Fresh Test Verification Evidence)
 
 Bằng chứng chạy mới bộ test tự động Pytest toàn diện (**200/200 Test Cases**) xác nhận không gây ảnh hưởng tác động phụ (**Zero Regression**):
