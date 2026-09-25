@@ -124,74 +124,107 @@ export async function initializeDatabase() {
         );
     `);
 
-    const userCount = await query('SELECT COUNT(*)::int AS total FROM app_users;');
-    if (userCount.rows[0].total === 0) {
+    const canonicalUsers = [
+        { email: 'alice@lms.test', password: 'learner123', role: 'Learner', name: 'Alice Learner' },
+        { email: 'bob@lms.test', password: 'instructor123', role: 'Instructor', name: 'Bob Instructor' },
+        { email: 'carol@lms.test', password: 'reviewer123', role: 'Reviewer', name: 'Carol Reviewer' },
+        { email: 'diana@lms.test', password: 'admin123', role: 'Admin', name: 'Diana Admin' },
+    ];
+
+    for (const user of canonicalUsers) {
         await query(
             `INSERT INTO app_users (email, password, role, name)
-             VALUES
-               ('alice@lms.test', 'learner123', 'Learner', 'Alice Learner'),
-               ('bob@lms.test', 'instructor123', 'Instructor', 'Bob Instructor'),
-               ('carol@lms.test', 'reviewer123', 'Reviewer', 'Carol Reviewer'),
-               ('diana@lms.test', 'admin123', 'Admin', 'Diana Admin');`
+             VALUES ($1, $2, $3, $4)
+             ON CONFLICT (email) DO UPDATE SET
+               password = EXCLUDED.password,
+               role = EXCLUDED.role,
+               name = EXCLUDED.name;`,
+            [user.email, user.password, user.role, user.name],
         );
     }
 
-    const courseCount = await query('SELECT COUNT(*)::int AS total FROM courses;');
-    if (courseCount.rows[0].total === 0) {
-        const instructorId = await query('SELECT id FROM app_users WHERE email = $1', ['bob@lms.test']);
-        const instructor = instructorId.rows[0]?.id;
+    const instructorRow = await query('SELECT id FROM app_users WHERE email = $1', ['bob@lms.test']);
+    const instructorId = instructorRow.rows[0]?.id;
 
+    const courseByCode = await query('SELECT id FROM courses WHERE code = $1 LIMIT 1;', ['CS-101']);
+    if (courseByCode.rowCount === 0) {
+        await query(
+            `INSERT INTO courses (id, code, title, description, category, status, instructor_id)
+             VALUES (1, 'CS-101', 'Human-Centered Product Design', 'Design thinking, empathy, user research and prototyping.', 'Design', 'Published', $1)
+             ON CONFLICT (id) DO NOTHING;`,
+            [instructorId || null],
+        );
+    }
+
+    const courseIds = await query('SELECT id FROM courses ORDER BY id LIMIT 1;');
+    if (courseIds.rowCount === 0) {
         await query(
             `INSERT INTO courses (code, title, description, category, status, instructor_id)
-             VALUES
-               ('CS-101', 'Human-Centered Product Design', 'Design thinking, empathy, user research and prototyping.', 'Design', 'Published', $1),
-               ('DS-201', 'Data Literacy for Decisions', 'Interpret charts, metrics, analysis and evidence-based decisions.', 'Data', 'Published', $1),
-               ('SYS-301', 'Systems Thinking 101', 'Model complex systems and understand root causes.', 'Systems', 'Published', $1);`,
-            [instructor],
+             VALUES ('CS-101', 'Human-Centered Product Design', 'Design thinking, empathy, user research and prototyping.', 'Design', 'Published', $1);`,
+            [instructorId || null],
+        );
+    }
+
+    const courseOne = await query('SELECT id FROM courses WHERE id = 1 LIMIT 1;');
+    if (courseOne.rowCount === 0) {
+        const firstCourse = await query('SELECT id FROM courses ORDER BY id LIMIT 1;');
+        const fallbackCourseId = firstCourse.rows[0]?.id;
+        if (fallbackCourseId) {
+            await query(
+                `UPDATE courses
+                 SET code = 'LEGACY-' || code,
+                     title = 'Legacy Course',
+                     description = 'Migrated legacy course for compatibility.',
+                     category = 'General',
+                     updated_at = NOW()
+                 WHERE id = $1;`,
+                [fallbackCourseId],
+            );
+        }
+        await query(
+            `INSERT INTO courses (id, code, title, description, category, status, instructor_id)
+             VALUES (1, 'CS-101', 'Human-Centered Product Design', 'Design thinking, empathy, user research and prototyping.', 'Design', 'Published', $1);`,
+            [instructorId || null],
+        );
+    }
+
+    const course1Id = await query('SELECT id FROM courses WHERE id = 1 LIMIT 1;');
+    const courseOneId = course1Id.rows[0]?.id;
+    if (courseOneId) {
+        await query(
+            `INSERT INTO lessons (course_id, title, content, duration, is_required, sort_order, status)
+             SELECT $1, 'Intro', 'Course introduction and outcomes.', 25, TRUE, 1, 'Published'
+             WHERE NOT EXISTS (
+                 SELECT 1 FROM lessons WHERE course_id = $1 AND title = 'Intro' LIMIT 1
+             );`,
+            [courseOneId],
         );
 
         await query(
             `INSERT INTO lessons (course_id, title, content, duration, is_required, sort_order, status)
-             SELECT c.id, 'Intro', 'Course introduction and outcomes.', 25, TRUE, 1, 'Published'
-             FROM courses c WHERE c.code = 'CS-101'
-             UNION ALL
-             SELECT c.id, 'Research', 'User research methods and synthesis.', 30, TRUE, 2, 'Published'
-             FROM courses c WHERE c.code = 'CS-101'
-             UNION ALL
-             SELECT c.id, 'Analytics Basics', 'Core metrics and data literacy.', 35, TRUE, 1, 'Published'
-             FROM courses c WHERE c.code = 'DS-201'
-             UNION ALL
-             SELECT c.id, 'Decision Frames', 'Decision quality and trade-offs.', 40, TRUE, 2, 'Published'
-             FROM courses c WHERE c.code = 'DS-201'
-             UNION ALL
-             SELECT c.id, 'Systems Map', 'Map feedback loops and causal structure.', 20, TRUE, 1, 'Published'
-             FROM courses c WHERE c.code = 'SYS-301'
-             UNION ALL
-             SELECT c.id, 'Intervention', 'Design intervention strategies.', 25, TRUE, 2, 'Published'
-             FROM courses c WHERE c.code = 'SYS-301';`
+             SELECT $1, 'Research', 'User research methods and synthesis.', 30, TRUE, 2, 'Published'
+             WHERE NOT EXISTS (
+                 SELECT 1 FROM lessons WHERE course_id = $1 AND title = 'Research' LIMIT 1
+             );`,
+            [courseOneId],
         );
 
         await query(
             `INSERT INTO assignments (course_id, title, description, deadline, max_attempts, status)
-             SELECT c.id, 'Design Reflection', 'Submit a short reflection on user research and design choices.', NOW() + INTERVAL '7 days', 2, 'Published'
-             FROM courses c WHERE c.code = 'CS-101'
-             UNION ALL
-             SELECT c.id, 'Data Memo', 'Write a short data memo with evidence and interpretation.', NOW() + INTERVAL '10 days', 2, 'Published'
-             FROM courses c WHERE c.code = 'DS-201'
-             UNION ALL
-             SELECT c.id, 'Systems Case', 'Apply systems thinking to a real-world problem.', NOW() + INTERVAL '12 days', 2, 'Published'
-             FROM courses c WHERE c.code = 'SYS-301';`
+             SELECT $1, 'Design Reflection', 'Submit a short reflection on user research and design choices.', NOW() + INTERVAL '7 days', 2, 'Published'
+             WHERE NOT EXISTS (
+                 SELECT 1 FROM assignments WHERE course_id = $1 AND title = 'Design Reflection' LIMIT 1
+             );`,
+            [courseOneId],
         );
 
         const learnerId = await query('SELECT id FROM app_users WHERE email = $1', ['alice@lms.test']);
         if (learnerId.rows[0]) {
             await query(
                 `INSERT INTO enrollments (user_id, course_id, status)
-                 SELECT u.id, c.id, 'Active'
-                 FROM app_users u
-                 JOIN courses c ON c.code = 'CS-101'
-                 WHERE u.email = 'alice@lms.test'
-                 ON CONFLICT (user_id, course_id) DO NOTHING;`,
+                 VALUES ($1, $2, 'Active')
+                 ON CONFLICT (user_id, course_id) DO UPDATE SET status = EXCLUDED.status;`,
+                [learnerId.rows[0].id, courseOneId],
             );
         }
     }
