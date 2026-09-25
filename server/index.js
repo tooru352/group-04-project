@@ -25,6 +25,11 @@ const normalizeRoleInput = (value) => {
     return map[String(text).trim().toLowerCase()] || null;
 };
 
+const hasMeaningfulText = (value) => {
+    if (value === undefined || value === null) return false;
+    return String(value).trim().length > 0;
+};
+
 function requireAdmin(req, res, next) {
     const headerRole = String(req.headers['x-user-role'] || '').trim();
     const bodyRole = String(req.body?.role || req.body?.actorRole || '').trim();
@@ -73,7 +78,7 @@ app.get('/api/health', async (_req, res) => {
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body || {};
 
-    if (!email || !password) {
+    if (!hasMeaningfulText(email) || !hasMeaningfulText(password)) {
         return res.status(400).json({ ok: false, message: 'Email and password are required.' });
     }
 
@@ -344,7 +349,7 @@ app.patch('/api/admin/users/:id/role', requireAdmin, async (req, res) => {
 app.post('/api/admin/users', requireAdmin, async (req, res) => {
     try {
         const { email, password, name, role } = req.body || {};
-        if (!email || !password || !name) {
+        if (!hasMeaningfulText(email) || !hasMeaningfulText(password) || !hasMeaningfulText(name)) {
             return res.status(400).json({ ok: false, message: 'Email, password, and name are required.' });
         }
 
@@ -850,6 +855,11 @@ app.patch('/api/submissions/:id/grade', requireRole('Reviewer', 'Instructor', 'A
             return res.status(422).json({ ok: false, message: 'Grade must be between 0 and 100.' });
         }
 
+        const trimmedFeedback = typeof feedback === 'string' ? feedback.trim() : '';
+        if (!hasMeaningfulText(trimmedFeedback)) {
+            return res.status(400).json({ ok: false, message: 'Feedback is required.' });
+        }
+
         const nextStatus = status && ['Passed', 'Needs Revision', 'Rejected'].includes(status) ? status : (numGrade >= 70 ? 'Passed' : 'Needs Revision');
 
         const updated = await query(
@@ -857,7 +867,7 @@ app.patch('/api/submissions/:id/grade', requireRole('Reviewer', 'Instructor', 'A
              SET grade = $1, feedback = $2, status = $3, reviewer_id = COALESCE($4, reviewer_id), updated_at = NOW()
              WHERE id = $5
              RETURNING *;`,
-            [numGrade, String(feedback || '').trim(), nextStatus, reviewerId || null, id]
+            [numGrade, trimmedFeedback, nextStatus, reviewerId || null, id]
         );
 
         if (updated.rowCount === 0) {
@@ -958,7 +968,10 @@ app.patch('/api/instructor/courses/:id', requireRole('Instructor', 'Admin'), asy
 app.post('/api/instructor/lessons', requireRole('Instructor', 'Admin'), async (req, res) => {
     try {
         const { courseId, title, content, duration, isRequired } = req.body || {};
-        if (!courseId || !title || !content) {
+        const validTitle = typeof title === 'string' ? title.trim() : '';
+        const validContent = typeof content === 'string' ? content.trim() : '';
+
+        if (!courseId || !hasMeaningfulText(validTitle) || !hasMeaningfulText(validContent)) {
             return res.status(400).json({ ok: false, message: 'courseId, title, and content are required.' });
         }
 
@@ -974,7 +987,7 @@ app.post('/api/instructor/lessons', requireRole('Instructor', 'Admin'), async (r
             `INSERT INTO lessons (course_id, title, content, duration, is_required, sort_order, status)
              VALUES ($1, $2, $3, $4, $5, $6, 'Published')
              RETURNING *;`,
-            [validCourseId, String(title).trim(), String(content).trim(), Number(duration || 20), isRequired !== false, nextOrder]
+            [validCourseId, validTitle, validContent, Number(duration || 20), isRequired !== false, nextOrder]
         );
 
         res.status(201).json({ ok: true, lesson: result.rows[0] });
@@ -986,7 +999,10 @@ app.post('/api/instructor/lessons', requireRole('Instructor', 'Admin'), async (r
 app.post('/api/instructor/assignments', requireRole('Instructor', 'Admin'), async (req, res) => {
     try {
         const { courseId, title, description, deadline, maxAttempts } = req.body || {};
-        if (!courseId || !title || !description) {
+        const validTitle = typeof title === 'string' ? title.trim() : '';
+        const validDescription = typeof description === 'string' ? description.trim() : '';
+
+        if (!courseId || !hasMeaningfulText(validTitle) || !hasMeaningfulText(validDescription)) {
             return res.status(400).json({ ok: false, message: 'courseId, title, and description are required.' });
         }
 
@@ -996,7 +1012,7 @@ app.post('/api/instructor/assignments', requireRole('Instructor', 'Admin'), asyn
             `INSERT INTO assignments (course_id, title, description, deadline, max_attempts, status)
              VALUES ($1, $2, $3, $4, $5, 'Published')
              RETURNING *;`,
-            [validCourseId, String(title).trim(), String(description).trim(), deadline ? new Date(deadline) : null, Number(maxAttempts || 1)]
+            [validCourseId, validTitle, validDescription, deadline ? new Date(deadline) : null, Number(maxAttempts || 1)]
         );
 
         res.status(201).json({ ok: true, assignment: result.rows[0] });

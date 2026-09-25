@@ -52,9 +52,17 @@ def test_tc_177_client_clock_tampering_for_deadline_submit():
 
 def test_tc_178_submit_reviewer_grade_without_feedback_text(api_base_url):
     res = requests.patch(f"{api_base_url}/api/submissions/1/grade", headers={"x-user-role": "Instructor"}, json={"grade": 85, "feedback": "   "})
-    assert res.status_code in [200, 400]
+    assert res.status_code == 400
 
-def test_tc_179_update_user_role_to_invalid_superadmin(api_base_url):
+def test_tc_179_blank_lesson_title_is_rejected(api_base_url):
+    res = requests.post(f"{api_base_url}/api/instructor/lessons", headers={"x-user-role": "Instructor"}, json={"courseId": 1, "title": "   ", "content": "Valid content"})
+    assert res.status_code == 400
+
+def test_tc_180_blank_assignment_description_is_rejected(api_base_url):
+    res = requests.post(f"{api_base_url}/api/instructor/assignments", headers={"x-user-role": "Instructor"}, json={"courseId": 1, "title": "Valid Title", "description": "   "})
+    assert res.status_code == 400
+
+def test_tc_181_update_user_role_to_invalid_superadmin(api_base_url):
     res = requests.patch(f"{api_base_url}/api/admin/users/1/role", headers={"x-user-role": "Admin"}, json={"role": "SuperAdmin"})
     assert res.status_code == 422
 

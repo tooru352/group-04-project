@@ -5,6 +5,7 @@
 > • **41 Express REST API Endpoint Integration Tests (TC-085 ➔ TC-125)**: Kiểm thử toàn bộ API Endpoints tại `server/index.js` (Headers, Status Codes 200/400/401/403/404/409/422/500).  
 > • **40 Frontend SPA React UI & Component Tests (TC-126 ➔ TC-165)**: Kiểm thử giao diện `web/src/` (Form validation, Responsive, Drawer, Modal, State Sync).  
 > • **35 Security, Resilience, Performance & Boundary Edge Cases (TC-166 ➔ TC-200)**: Kiểm thử bảo mật (XSS, SQL Injection, Prompt Injection), mất mạng, hết hạn JWT token, Optimistic Locking, và Hiệu năng Tải trọng.  
+> **Lưu ý quan trọng**: Tiêu chí pass không chỉ là `200 OK`; test suite bắt buộc phải phủ thêm các trường hợp permission denial (`403`), validation failure (`400/422`), và business rule enforcement (`409/422`), vì đây là yêu cầu sinh ra từ spec.  
 > **Tổng cộng**: **200 Test Cases** phủ kín 100% mọi tầng kiến trúc dự án LMS.
 
 ---
@@ -72,7 +73,7 @@
 | TC-037 | Lesson view for non-existent lesson ID | REQ-LES-03 | Rejected 404 Lesson not found | Automated |
 | TC-038 | Non-learner role lesson view block | NFR-LES-01 | Rejected 403 Only Learners can view lessons | Automated |
 | TC-039 | Instructor create lesson in course | US-INS-01 AC1 | Creates lesson with position order + 1 | Automated |
-| TC-040 | Reject empty title or content lesson | US-INS-01 AC2 | Rejected 400 Lesson title and content must not be empty | Automated |
+| TC-040 | Reject empty or whitespace-only title/content lesson | US-INS-01 AC2 | Rejected 400 Lesson title and content must not be empty | Automated |
 | TC-041 | Reject lesson edit outside scope | US-INS-01 AC3 | Rejected 403 You do not manage this course | Automated |
 | TC-042 | Complete lesson once by enrolled learner | REQ-LES-04 | Completion record created | Automated |
 | TC-043 | Ignore duplicate lesson completion | REQ-LES-05 | Idempotent success (single record retained) | Automated |
@@ -110,10 +111,11 @@
 | TC-067 | Instructor fetch out-of-scope submissions | US-INS-04 AC2 | Rejected 403 Access denied | Automated |
 | TC-068 | Validate grade bounds (0-100) & feedback | REQ-GRD-01 | Grade score 0-100 validated | Automated |
 | TC-069 | Instructor grade submitted submission | US-INS-05 AC1 | Grade & feedback saved, status = Graded | Automated |
-| TC-070 | Reject Learner grade submission attempt | NFR-GRD-01 | Rejected 403 Only Instructors or Reviewers can grade | Automated |
-| TC-071 | Reviewer grade assigned submission | US-REV-02 AC1 | Grade & feedback saved, status = Graded | Automated |
-| TC-072 | Reject reviewer grade unassigned submission | US-REV-02 AC2 | Rejected 403 Submission not assigned to reviewer | Automated |
-| TC-073 | Learner view own graded submission feedback | REQ-FBK-01 | Returns score and reviewer feedback | Automated |
+| TC-070 | Reject blank or whitespace-only grading feedback | NFR-GRD-02 | Rejected 400 Feedback is required | Automated |
+| TC-071 | Reject Learner grade submission attempt | NFR-GRD-01 | Rejected 403 Only Instructors or Reviewers can grade | Automated |
+| TC-072 | Reviewer grade assigned submission | US-REV-02 AC1 | Grade & feedback saved, status = Graded | Automated |
+| TC-073 | Reject reviewer grade unassigned submission | US-REV-02 AC2 | Rejected 403 Submission not assigned to reviewer | Automated |
+| TC-074 | Learner view own graded submission feedback | REQ-FBK-01 | Returns score and reviewer feedback | Automated |
 | TC-074 | Learner view ungraded submission status | REQ-FBK-02 | Returns status "Awaiting Grading" | Automated |
 | TC-075 | Reject learner view other learner feedback | NFR-FBK-01 | Rejected 403 Access denied | Automated |
 
