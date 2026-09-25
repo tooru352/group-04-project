@@ -4,9 +4,10 @@
 > **Đường dẫn file**: `docs/08-quality/bug-log.md`  
 > **Dự án**: Micro-learning / LMS Course Platform System (Group 04)  
 > **Quy trình áp dụng**: `REPRODUCE → LOG → FIX → VERIFY REGRESSION → CLOSE`  
-> **Link Commit Source Code Fix (Do Thi Kim Yen)**: [Commit 24588d1](https://github.com/tooru352/group-04-project/commit/24588d18dc73)  
-> **Link Commit Source Code Fix (Doan Xuan Toan)**: [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)  
-> **Trạng thái Gate Quality**: PASS (100% Closure có Evidence & 200/200 Automated Tests Passed)  
+> **Link Commit Source Code Fix (Validation hardening)**: [Commit 2c6f8b0](https://github.com/tooru352/group-04-project/commit/2c6f8b0)  
+> **Link Commit Source Code Fix (RBAC and backend fixes)**: [Commit 24588d1](https://github.com/tooru352/group-04-project/commit/24588d18dc73)  
+> **Link Commit Source Code Fix (Reviewer + grading + AI context)**: [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)  
+> **Trạng thái Gate Quality**: PASS (100% Closure có Evidence & 202/202 Automated Tests Passed)  
 
 ---
 
@@ -20,6 +21,8 @@ Khi thực thi bộ kiểm thử tự động 200 Test Cases lần đầu tiên 
 - **Tổng số Test Cases**: `200`
 - **Số Test Passed ban đầu**: `192 PASSED` (96%)
 - **Số Test Failed ban đầu**: `8 FAILED` (4%) — Các test case này tương ứng với các lỗi logic, bảo mật và ràng buộc dữ liệu được phát hiện.
+
+Sau khi bổ sung các rule/permission/validation negative-cases theo đúng yêu cầu sản phẩm, bộ kiểm thử được mở rộng và thực thi lại trên phiên bản cuối cùng với tổng số `202` test cases. Kết quả hiện tại là **202/202 PASS**.
 
 | STT | Mã Test Case Failed | Tên Kiểm thử (Test Function Name) | Lỗi phát hiện (Defect Summary) | Trạng thái sau Fix | Bug ID liên kết |
 | :---: | :--- | :--- | :--- | :---: | :---: |
@@ -46,6 +49,7 @@ Khi thực thi bộ kiểm thử tự động 200 Test Cases lần đầu tiên 
 | **`BUG-06`** | Grade out-of-bounds (`score > 100` or `< 0`) accepted by Reviewer API | **Minor** | Doan Xuan Toan | **CLOSED** | [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0) | `test_tc_115_submission_grade_out_of_bound_validation` |
 | **`BUG-07`** | Unhandled course deletion when active learners are currently enrolled | **Major** | Doan Xuan Toan | **CLOSED** | [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0) | `test_tc_175_delete_course_with_active_enrolled_learners` |
 | **`BUG-08`** | Missing guard condition preventing self-demotion of last system admin | **Blocker** | Doan Xuan Toan | **CLOSED** | [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0) | `test_tc_182_block_self_demotion_of_last_system_admin` |
+| **`BUG-09`** | Validation gap: whitespace-only feedback/title/description still passed as valid input | **Major** | Doan Xuan Toan | **CLOSED** | [Commit 2c6f8b0](https://github.com/tooru352/group-04-project/commit/2c6f8b0) | `test_tc_178_submit_reviewer_grade_without_feedback_text`, `test_tc_179_blank_lesson_title_is_rejected`, `test_tc_180_blank_assignment_description_is_rejected` |
 
 ---
 

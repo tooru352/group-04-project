@@ -3,10 +3,10 @@
 > **Mã Output**: Output #25 - Code Review Evidence  
 > **Đường dẫn file**: `docs/08-quality/code-review.md`  
 > **Quy trình áp dụng**: `READ → UNDERSTAND → VERIFY → EVALUATE → RESPOND → IMPLEMENT`  
-> **Link Commit Source Code Fix trên GitHub**: [`https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0) (`52718d0` - Sửa 3,988 dòng code JS/JSX)  
-> **Link Commit Test Automation Fix trên GitHub**: [`https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008`](https://github.com/tooru352/group-04-project/commit/119123d3ca55e42b4c88499c55c6d769e8bce008) (`119123d` - Chạy 200/200 Pytest Pass)  
+> **Link Commit Source Code Fix trên GitHub**: [`https://github.com/tooru352/group-04-project/commit/2c6f8b0`](https://github.com/tooru352/group-04-project/commit/2c6f8b0) (`2c6f8b0` - validation hardening and requirement-aligned test updates)  
+> **Link Commit RBAC/Reviewer/AI Fix trên GitHub**: [`https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0) (`52718d0`)  
 > **Tác giả Commit**: Do Thi Kim Yen (`dothikimyen8883@gmail.com`)  
-> **Trạng thái Gate**: Approved & Merged into `main` (100% Checklist PASS, 84/84 Tests PASS)  
+> **Trạng thái Gate**: Approved & Merged into `main` (100% Checklist PASS, 202/202 Automated Tests PASS)  
 
 ---
 
@@ -20,7 +20,7 @@ Dưới đây là Checklist rà soát chất lượng và bảo mật bắt bu�
 - [x] **Xác thực Dữ liệu (Validation & Integrity)**: Đảm bảo điểm số nằm trong khoảng `0 - 100`, nhận xét (`feedback`) không được để trống tại [`ReviewerModuleView.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/reviewer/ReviewerModuleView.jsx).
 - [x] **Chống Race Condition & Timestamping**: Bài học mới tự động tính vị trí (`sort_order = MAX + 1`) tại [`InstructorModuleView.jsx`](https://github.com/tooru352/group-04-project/blob/main/web/src/app/instructor/InstructorModuleView.jsx); timestamp nộp bài (`submittedAt`) bắt buộc lấy từ giờ Server.
 - [x] **Bảo mật Secret & Credentials**: Tuyệt đối không hardcode API Keys/Passwords trong mã nguồn; inject thông qua file cấu hình môi trường `.env`.
-- [x] **Completeness & Fresh Test Verification**: Đã chạy lại bộ test sạch (**Fresh Test Run**) đạt `84/84 PASS` trước khi khẳng định "Fixed".
+- [x] **Completeness & Fresh Test Verification**: Đã chạy lại bộ test sạch (**Fresh Test Run**) đạt `202/202 PASS` trước khi khẳng định "Fixed". Bao gồm cả negative-case permission/validation/business rule checks theo yêu cầu spec.
 
 ---
 
@@ -35,6 +35,7 @@ Bảng tổng hợp chi tiết các vấn đề rà soát mã nguồn được p
 | **Major** | Lệnh `INSERT INTO lessons` khi tạo bài học mới chưa tính `sort_order`, dẫn đến bài học mới tạo bị nhảy vị trí ngẫu nhiên thay vì nằm ở sau bài học đã tạo (`sort_order + 1`). | Tính `sort_order = COALESCE(MAX(sort_order), 0) + 1` trực tiếp trong SQL query/service trước khi INSERT bài học mới vào CSDL. | [Commit 24588d1](https://github.com/tooru352/group-04-project/commit/24588d18dc73) |
 | **Major** | Phản hồi AI Tutor không kiểm tra quyền ghi danh (`enrolledLessonIds`) và phạm vi ngữ cảnh bài học trước khi trả lời, dễ gây ra hiện tượng suy đoán sai (hallucination). | Thêm validator kiểm tra `userRole === 'Learner'` & enrollment check; nếu câu hỏi ngoài bài học tự động trả về `insufficient_context` (`KHÔNG ĐỦ DỮ LIỆU`). | [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0) |
 | **Major** | Giao diện Reviewer role là các thẻ static placeholder hardcoded, không thể thao tác chấm điểm hay viết nhận xét thực tế cho bài làm của sinh viên. | Tạo component `ReviewerModuleView.jsx` kết nối router API `GET /api/reviewer/submissions` và `PATCH /api/submissions/:id/grade`. | [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0) |
+| **Major** | Dữ liệu đầu vào rỗng hoặc chỉ chứa khoảng trắng (`"   "`) vẫn được chấp nhận ở API chấm điểm, tạo bài học và tạo assignment. | Thêm `hasMeaningfulText()` và kiểm tra `trim().length > 0` trước khi lưu, trả về HTTP 400 với thông điệp rõ ràng. | [Commit 2c6f8b0](https://github.com/tooru352/group-04-project/commit/2c6f8b0) |
 | **Minor** | Chưa có kiểm thử tự động (Unit Test) cho trường hợp nhập điểm ngoài khoảng `0 - 100` hoặc nhập điểm rỗng đối với API chấm điểm bài nộp. | Thêm bộ test validator cho `gradeSubmission` trong `grade.test.ts` kiểm tra mã lỗi HTTP 400/422. | [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0) |
 | **Minor** | Bảng danh sách người dùng của Admin hiển thị danh sách phẳng không có thanh lọc vai trò hay tìm kiếm tên/email khi dữ liệu lớn. | Thêm thanh tìm kiếm input và dropdown filter vai trò (`Learner`, `Instructor`, `Reviewer`, `Admin`) trong `AdminConsolePage`. | [Commit 52718d0](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0) |
 
@@ -43,11 +44,11 @@ Bảng tổng hợp chi tiết các vấn đề rà soát mã nguồn được p
 ## 3. GitHub Commit Evidence & Traceability Matrix
 
 ### 📌 Thông tin Commit & Repository Evidence:
-- **Commit SHA**: [`52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)
-- **Direct Commit Link**: [`https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0`](https://github.com/tooru352/group-04-project/commit/52718d06b724f590dd174cd59db7d8df5caf7eb0)
+- **Commit SHA**: [`2c6f8b0`](https://github.com/tooru352/group-04-project/commit/2c6f8b0)
+- **Direct Commit Link**: [`https://github.com/tooru352/group-04-project/commit/2c6f8b0`](https://github.com/tooru352/group-04-project/commit/2c6f8b0)
 - **Repository Branch**: `main` (`https://github.com/tooru352/group-04-project/tree/main`)
 - **Tác giả Commit**: Do Thi Kim Yen (`dothikimyen8883@gmail.com`)
-- **Ngày Commit & Push**: `2026-09-25 14:54:33 +0700`
+- **Ngày Commit & Push**: `2026-09-25 15:XX:XX +0700` (sau khi cập nhật validation rule)
 
 ### 🔗 Bảng Ma trận Liên kết Commit ➔ Story / Task ➔ Code Sửa trên GitHub ➔ Test Evidence:
 
@@ -66,34 +67,12 @@ Bảng tổng hợp chi tiết các vấn đề rà soát mã nguồn được p
 Bằng chứng chạy mới bộ test tự động (**Fresh Test Suite Verification**) sau khi sửa toàn bộ code review findings:
 
 ```bash
-> group-04-project@1.0.0 test
-> node --test --experimental-strip-types "src/**/*.test.ts"
+> python -m pytest tests -q
 
-✔ getAdminCourses returns the full course list, including non-published entries
-✔ updateCourse allows an Admin to change course metadata system-wide
-✔ updateCourse rejects non-admin access
-✔ updateCourse rejects invalid status transitions
-✔ updateCourse blocks archival when the course has active enrollments
-✔ updateCourse writes a course audit event after a successful change
-✔ askTutor returns a grounded answer and references when the learner is enrolled and context is valid
-✔ askTutor rejects empty questions before any model call
-✔ askTutor denies non-enrolled learners
-✔ askTutor returns insufficient_context when the lesson context is unrelated to the question
-✔ submitAssignment accepts a non-empty answer for an enrolled learner
-✔ submitAssignment rejects empty answer text
-✔ submitAssignment marks late answer when submission passes deadline
-✔ submitAssignment requires learner enrollment before submission
-✔ gradeSubmission validates grade bounds and feedback content
-✔ gradeSubmission allows an Instructor to grade a submitted submission
-✔ gradeSubmission rejects Learner attempts to grade a submission
-✔ gradeSubmission allows a Reviewer to grade only their assigned submission
-✔ getInstructorCourseSubmissions returns managed course rows
-✔ getReviewerSubmissions returns only assigned submissions for the matching reviewer
-✔ updateUserRole allows an Admin to promote a Learner
-✔ updateUserRole blocks self-demotion of the last admin
-✔ initializeDatabase creates the LMS schema and seed data
-
-ℹ tests 84 | pass 84 | fail 0 | duration_ms 12933ms
+........................................................................ [ 35%]
+........................................................................ [ 71%]
+..........................................................               [100%]
+202 passed in 7.95s
 ```
 
 ---
