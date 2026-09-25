@@ -5,6 +5,7 @@ import LearnerModuleView from './app/learner/LearnerModuleView.jsx'
 import InstructorModuleView from './app/instructor/InstructorModuleView.jsx'
 import ReviewerModuleView from './app/reviewer/ReviewerModuleView.jsx'
 
+// BUG-03: Using window.location.reload() causing session RAM state loss on window reload
 const API_BASE = 'http://localhost:4000'
 
 const roleConfig = [

@@ -131,6 +131,7 @@ export default function LearnerModuleView({
     }
   }
 
+  // BUG-01: Missing isSubmitting debouncing check on submit button (allows rapid double-click duplicate requests)
   const handleFormSubmitAssignment = async (assignmentId) => {
     setActionMessage('')
     await submitAssignment(assignmentId)
