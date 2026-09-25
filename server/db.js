@@ -114,6 +114,16 @@ export async function initializeDatabase() {
         );
     `);
 
+    await query(`
+        CREATE TABLE IF NOT EXISTS lesson_completions (
+            id SERIAL PRIMARY KEY,
+            user_id INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+            lesson_id INT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+            completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(user_id, lesson_id)
+        );
+    `);
+
     const userCount = await query('SELECT COUNT(*)::int AS total FROM app_users;');
     if (userCount.rows[0].total === 0) {
         await query(

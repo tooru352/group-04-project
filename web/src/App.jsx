@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import AdminConsolePage from './app/admin/page.jsx'
-import LearnerDashboardPage from './app/learner/dashboard/page.jsx'
-import InstructorDashboardPage from './app/instructor/dashboard/page.jsx'
-import ReviewerDashboardPage from './app/reviewer/dashboard/page.jsx'
+import LearnerModuleView from './app/learner/LearnerModuleView.jsx'
+import InstructorModuleView from './app/instructor/InstructorModuleView.jsx'
+import ReviewerModuleView from './app/reviewer/ReviewerModuleView.jsx'
 
 const API_BASE = 'http://localhost:4000'
 
@@ -43,10 +43,9 @@ const roleModules = {
   ],
   learner: [
     { id: 'overview', label: 'Overview', summary: 'My learning track' },
-    { id: 'courses', label: 'Courses', summary: 'My enrolled courses' },
-    { id: 'assignments', label: 'Assignments', summary: 'Task and deadlines' },
+    { id: 'courses', label: 'Courses', summary: 'Courses & AI Lessons' },
+    { id: 'assignments', label: 'Assignments', summary: 'Tasks & AI Support' },
     { id: 'grades', label: 'Grades', summary: 'Progress and performance' },
-    { id: 'ai-tutor', label: 'AI Tutor', summary: 'Ask an AI learning coach' },
   ],
   instructor: [
     { id: 'overview', label: 'Overview', summary: 'Teaching dashboard' },
@@ -77,6 +76,7 @@ function RoleModuleScreen({
   assignmentSubmitState,
   onUpdateUserRole,
   onUpdateCourse,
+  onRefreshData,
 }) {
   const courses = Array.isArray(roleData.courses) ? roleData.courses : []
   const users = Array.isArray(roleData.users) ? roleData.users : []
@@ -111,310 +111,45 @@ function RoleModuleScreen({
   )
 
   if (role === 'learner') {
-    if (activeModule === 'ai-tutor') {
-      return (
-        <div className="ai-tutor-shell">
-          <div className="panel-card ai-tutor-panel">
-            <h3>AI Tutor</h3>
-            <p className="ai-tutor-subtitle">Ask for course guidance, assignments help, or revision suggestions.</p>
-            <div className="ai-tutor-form">
-              <textarea
-                value={session?.aiPrompt || ''}
-                onChange={(event) => session?.setAiPrompt?.(event.target.value)}
-                placeholder="Example: How should I structure my assignment response?"
-              />
-              <button type="button" className="primary-action" onClick={session?.handleAiAsk} disabled={session?.aiLoading || false}>
-                {session?.aiLoading ? 'Thinking...' : 'Ask AI Tutor'}
-              </button>
-            </div>
-            <div className="ai-tutor-response">
-              {session?.aiLoading ? <p>Generating guidance...</p> : null}
-              {!session?.aiLoading && session?.aiAnswer ? <p>{session.aiAnswer}</p> : null}
-              {!session?.aiLoading && !session?.aiAnswer ? <p className="muted-text">Ask a question to get learning guidance and assignment support.</p> : null}
-            </div>
-          </div>
-        </div>
-      )
-    }
-
-    if (activeModule === 'courses') {
-      return (
-        <div className="dashboard-layout">
-          <div className="panel-card">
-            <h3>My courses</h3>
-            <div className="module-list interactive-list">
-              {courses.slice(0, 4).map((course) => (
-                <button
-                  type="button"
-                  key={course.id || course.title}
-                  className={`course-row ${selectedCourseId === course.id ? 'active' : ''}`}
-                  onClick={() => onSelectCourse?.(course)}
-                >
-                  <span>{course.title}</span>
-                  <span className="badge blue">{course.status || 'Published'}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="panel-card">
-            <h3>Course detail</h3>
-            {selectedCourse ? (
-              <div className="course-detail-panel">
-                <h4>{selectedCourse.title}</h4>
-                <p>{selectedCourse.description || 'No description provided for this course yet.'}</p>
-                <div className="course-meta">
-                  <span>Status: {selectedCourse.status || 'Published'}</span>
-                  <span>Category: {selectedCourse.category || 'General'}</span>
-                </div>
-                <button type="button" className="primary-action">Open course</button>
-              </div>
-            ) : (
-              <p className="muted-text">Select a course to view details.</p>
-            )}
-          </div>
-        </div>
-      )
-    }
-
-    if (activeModule === 'assignments') {
-      return (
-        <div className="dashboard-layout">
-          <div className="panel-card">
-            <h3>Assignment queue</h3>
-            <div className="module-list interactive-list">
-              {assignments.slice(0, 4).map((assignment) => (
-                <button
-                  type="button"
-                  key={assignment.id || assignment.title}
-                  className={`course-row ${selectedAssignmentId === assignment.id ? 'active' : ''}`}
-                  onClick={() => onSelectAssignment?.(assignment)}
-                >
-                  <span>{assignment.title}</span>
-                  <span className="badge orange">{assignment.status || 'Open'}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="panel-card">
-            <h3>Assignment detail</h3>
-            {selectedAssignment ? (
-              <div className="course-detail-panel">
-                <h4>{selectedAssignment.title}</h4>
-                <p>{selectedAssignment.description || 'No assignment description available yet.'}</p>
-                <div className="course-meta">
-                  <span>Course: {selectedAssignment.course_title || 'General'}</span>
-                  <span>Deadline: {selectedAssignment.deadline ? new Date(selectedAssignment.deadline).toLocaleDateString() : 'No deadline'}</span>
-                </div>
-
-                <div className="assignment-form">
-                  <textarea
-                    value={assignmentDraft || ''}
-                    onChange={(event) => setAssignmentDraft?.(event.target.value)}
-                    placeholder="Write your answer here..."
-                  />
-                  <button type="button" className="primary-action" onClick={() => submitAssignment?.(selectedAssignment.id)} disabled={!assignmentDraft?.trim()}>
-                    Submit answer
-                  </button>
-                </div>
-
-                {assignmentSubmitState && (
-                  <p className={`submission-message ${assignmentSubmitState.ok ? 'success' : 'error'}`}>
-                    {assignmentSubmitState.message}
-                  </p>
-                )}
-              </div>
-            ) : (
-              <p className="muted-text">Select an assignment to view the task details.</p>
-            )}
-          </div>
-        </div>
-      )
-    }
-
-    if (activeModule === 'grades') {
-      return (
-        <div className="dashboard-layout">
-          {card('Performance', [
-            { label: 'Current average', value: '92%' },
-            { label: 'Assignments passed', value: '8/10' },
-            { label: 'Course completion', value: '74%' },
-          ], 'green')}
-          {card('Progress checklist', [
-            { label: 'Reading modules', value: 'Done' },
-            { label: 'Practice tasks', value: 'In progress' },
-            { label: 'Final project', value: 'Planned' },
-          ], 'purple')}
-        </div>
-      )
-    }
-
-    return <LearnerDashboardPage session={session} roleData={roleData} />
+    return (
+      <LearnerModuleView
+        session={session}
+        activeModule={activeModule}
+        courses={courses}
+        assignments={assignments}
+        selectedCourseId={selectedCourseId}
+        onSelectCourse={onSelectCourse}
+        selectedAssignmentId={selectedAssignmentId}
+        onSelectAssignment={onSelectAssignment}
+        assignmentDraft={assignmentDraft}
+        setAssignmentDraft={setAssignmentDraft}
+        submitAssignment={submitAssignment}
+        assignmentSubmitState={assignmentSubmitState}
+      />
+    )
   }
 
   if (role === 'instructor') {
-    if (activeModule === 'courses') {
-      return (
-        <div className="dashboard-layout">
-          <div className="panel-card">
-            <h3>Managed courses</h3>
-            <div className="module-list interactive-list">
-              {courses.slice(0, 4).map((course) => (
-                <button
-                  type="button"
-                  key={course.id || course.title}
-                  className={`course-row ${selectedCourseId === course.id ? 'active' : ''}`}
-                  onClick={() => onSelectCourse?.(course)}
-                >
-                  <span>{course.title}</span>
-                  <span className="badge green">{course.category || 'Course'}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="panel-card">
-            <h3>Course insight</h3>
-            {selectedCourse ? (
-              <div className="course-detail-panel">
-                <h4>{selectedCourse.title}</h4>
-                <p>{selectedCourse.description || 'This course is ready for teaching and delivery.'}</p>
-                <div className="course-meta">
-                  <span>Category: {selectedCourse.category || 'General'}</span>
-                  <span>Status: {selectedCourse.status || 'Published'}</span>
-                </div>
-                <button type="button" className="primary-action">Manage course</button>
-              </div>
-            ) : (
-              <p className="muted-text">Select a course to inspect it.</p>
-            )}
-          </div>
-        </div>
-      )
-    }
-
-    if (activeModule === 'assignments') {
-      return (
-        <div className="dashboard-layout">
-          <div className="panel-card">
-            <h3>Assignments</h3>
-            <div className="module-list interactive-list">
-              {assignments.slice(0, 4).map((assignment) => (
-                <button
-                  type="button"
-                  key={assignment.id || assignment.title}
-                  className={`course-row ${selectedAssignmentId === assignment.id ? 'active' : ''}`}
-                  onClick={() => onSelectAssignment?.(assignment)}
-                >
-                  <span>{assignment.title}</span>
-                  <span className="badge purple">{assignment.status || 'Open'}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="panel-card">
-            <h3>Submission detail</h3>
-            {selectedAssignment ? (
-              <div className="course-detail-panel">
-                <h4>{selectedAssignment.title}</h4>
-                <p>{selectedAssignment.description || 'No assignment description available yet.'}</p>
-                <div className="course-meta">
-                  <span>Course: {selectedAssignment.course_title || 'General'}</span>
-                  <span>Deadline: {selectedAssignment.deadline ? new Date(selectedAssignment.deadline).toLocaleDateString() : 'No deadline'}</span>
-                </div>
-
-                <div className="assignment-form">
-                  <textarea
-                    value={assignmentDraft || ''}
-                    onChange={(event) => setAssignmentDraft?.(event.target.value)}
-                    placeholder="Write your answer here..."
-                  />
-                  <button type="button" className="primary-action" onClick={() => submitAssignment?.(selectedAssignment.id)} disabled={!assignmentDraft?.trim()}>
-                    Review work
-                  </button>
-                </div>
-
-                {assignmentSubmitState && (
-                  <p className={`submission-message ${assignmentSubmitState.ok ? 'success' : 'error'}`}>
-                    {assignmentSubmitState.message}
-                  </p>
-                )}
-              </div>
-            ) : (
-              <p className="muted-text">Select an assignment to inspect it.</p>
-            )}
-          </div>
-        </div>
-      )
-    }
-
-    if (activeModule === 'submissions') {
-      return (
-        <div className="dashboard-layout">
-          {card('Submission queue', [
-            { label: 'Alice Learner', value: 'Draft' },
-            { label: 'Bob Team', value: 'Submitted' },
-            { label: 'Review ready', value: '2' },
-          ], 'orange')}
-          {card('Feedback backlog', [
-            { label: 'Late submissions', value: '1' },
-            { label: 'Needs comment', value: '4' },
-            { label: 'Rubric updates', value: '2' },
-          ], 'green')}
-        </div>
-      )
-    }
-
-    return <InstructorDashboardPage session={session} roleData={roleData} />
+    return (
+      <InstructorModuleView
+        session={session}
+        activeModule={activeModule}
+        courses={courses}
+        assignments={assignments}
+        users={users}
+        onRefreshData={onRefreshData}
+      />
+    )
   }
 
   if (role === 'reviewer') {
-    if (activeModule === 'reviews') {
-      return (
-        <div className="dashboard-layout">
-          {card('Review queue', assignments.slice(0, 4).map((assignment) => ({ label: assignment.title, value: assignment.status || 'Pending' })), 'orange')}
-          {card('Quality checks', [
-            { label: 'High priority', value: '4' },
-            { label: 'In progress', value: '2' },
-            { label: 'Completed', value: '9' },
-          ], 'purple')}
-        </div>
-      )
-    }
-
-    if (activeModule === 'feedback') {
-      return (
-        <div className="dashboard-layout">
-          {card('Feedback cases', [
-            { label: 'Content issues', value: '3' },
-            { label: 'Policy alerts', value: '1' },
-            { label: 'Resolved this week', value: '7' },
-          ], 'blue')}
-          {card('Reviewer notes', [
-            { label: 'Template library', value: 'Ready' },
-            { label: 'Escalations', value: '2' },
-            { label: 'Audit trail', value: 'Updated' },
-          ], 'green')}
-        </div>
-      )
-    }
-
-    if (activeModule === 'history') {
-      return (
-        <div className="dashboard-layout">
-          {card('Review history', [
-            { label: 'This month', value: '18' },
-            { label: 'Average turnaround', value: '2.4d' },
-            { label: 'Follow-ups', value: '6' },
-          ], 'green')}
-          {card('Previous actions', [
-            { label: 'Approved bundles', value: '12' },
-            { label: 'Flagged items', value: '3' },
-            { label: 'Escalated', value: '2' },
-          ], 'orange')}
-        </div>
-      )
-    }
-
-    return <ReviewerDashboardPage session={session} roleData={roleData} />
+    return (
+      <ReviewerModuleView
+        session={session}
+        activeModule={activeModule}
+        roleData={roleData}
+      />
+    )
   }
 
   if (role === 'admin') {
@@ -434,9 +169,16 @@ async function fetchJson(url) {
 }
 
 function App() {
-  const [activeRole, setActiveRole] = useState('admin')
+  const [session, setSession] = useState(() => {
+    try {
+      const saved = localStorage.getItem('lms_session')
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
+  })
+  const [activeRole, setActiveRole] = useState(() => session?.role || 'admin')
   const [activeModule, setActiveModule] = useState('overview')
-  const [session, setSession] = useState(null)
   const [form, setForm] = useState({ email: 'alice@lms.test', password: 'learner123' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -456,6 +198,15 @@ function App() {
     instructor: { email: 'bob@lms.test', password: 'instructor123' },
     reviewer: { email: 'carol@lms.test', password: 'reviewer123' },
     admin: { email: 'diana@lms.test', password: 'admin123' },
+  }
+
+  const updateSession = (newSession) => {
+    setSession(newSession)
+    if (newSession) {
+      localStorage.setItem('lms_session', JSON.stringify(newSession))
+    } else {
+      localStorage.removeItem('lms_session')
+    }
   }
 
   useEffect(() => {
@@ -530,12 +281,13 @@ function App() {
       }
 
       const userRole = String(result.session.role).toLowerCase()
-      setSession({
+      const userSession = {
         userId: result.session.userId,
         name: result.session.name,
         role: userRole,
         email: result.session.email,
-      })
+      }
+      updateSession(userSession)
       setActiveRole(userRole)
       setActiveModule('overview')
       setSelectedCourseId(null)
@@ -547,7 +299,7 @@ function App() {
   }
 
   const handleLogout = () => {
-    setSession(null)
+    updateSession(null)
     setActiveRole('admin')
     setActiveModule('overview')
     setAiPrompt('')
