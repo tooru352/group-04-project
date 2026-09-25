@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import AdminConsolePage from './app/admin/page.jsx'
+import LearnerDashboardPage from './app/learner/dashboard/page.jsx'
+import InstructorDashboardPage from './app/instructor/dashboard/page.jsx'
+import ReviewerDashboardPage from './app/reviewer/dashboard/page.jsx'
 
 const API_BASE = 'http://localhost:4000'
 
@@ -58,10 +62,39 @@ const roleModules = {
   ],
 }
 
-function RoleModuleScreen({ role, session, roleData, activeModule }) {
+function RoleModuleScreen({
+  role,
+  session,
+  roleData,
+  activeModule,
+  selectedCourseId,
+  onSelectCourse,
+  selectedAssignmentId,
+  onSelectAssignment,
+  assignmentDraft,
+  setAssignmentDraft,
+  submitAssignment,
+  assignmentSubmitState,
+  onUpdateUserRole,
+  onUpdateCourse,
+}) {
   const courses = Array.isArray(roleData.courses) ? roleData.courses : []
   const users = Array.isArray(roleData.users) ? roleData.users : []
   const assignments = Array.isArray(roleData.assignments) ? roleData.assignments : []
+  const selectedCourse = courses.find((course) => course.id === selectedCourseId) || null
+  const selectedAssignment = assignments.find((assignment) => assignment.id === selectedAssignmentId) || null
+
+  const courseAction = (course) => (
+    <button
+      type="button"
+      key={course.id || course.title}
+      className={`course-row ${selectedCourseId === course.id ? 'active' : ''}`}
+      onClick={() => onSelectCourse?.(course)}
+    >
+      <span>{course.title}</span>
+      <span className="badge blue">{course.status || 'Published'}</span>
+    </button>
+  )
 
   const card = (title, body, accent = 'blue') => (
     <div className="panel-card" key={title}>
@@ -107,12 +140,38 @@ function RoleModuleScreen({ role, session, roleData, activeModule }) {
     if (activeModule === 'courses') {
       return (
         <div className="dashboard-layout">
-          {card('My courses', courses.slice(0, 4).map((course) => ({ label: course.title, value: course.status || 'Published' })), 'blue')}
-          {card('Recent activity', [
-            { label: 'Completed lessons', value: '12' },
-            { label: 'Current streak', value: '5 days' },
-            { label: 'Next due', value: 'Today' },
-          ], 'green')}
+          <div className="panel-card">
+            <h3>My courses</h3>
+            <div className="module-list interactive-list">
+              {courses.slice(0, 4).map((course) => (
+                <button
+                  type="button"
+                  key={course.id || course.title}
+                  className={`course-row ${selectedCourseId === course.id ? 'active' : ''}`}
+                  onClick={() => onSelectCourse?.(course)}
+                >
+                  <span>{course.title}</span>
+                  <span className="badge blue">{course.status || 'Published'}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="panel-card">
+            <h3>Course detail</h3>
+            {selectedCourse ? (
+              <div className="course-detail-panel">
+                <h4>{selectedCourse.title}</h4>
+                <p>{selectedCourse.description || 'No description provided for this course yet.'}</p>
+                <div className="course-meta">
+                  <span>Status: {selectedCourse.status || 'Published'}</span>
+                  <span>Category: {selectedCourse.category || 'General'}</span>
+                </div>
+                <button type="button" className="primary-action">Open course</button>
+              </div>
+            ) : (
+              <p className="muted-text">Select a course to view details.</p>
+            )}
+          </div>
         </div>
       )
     }
@@ -120,12 +179,54 @@ function RoleModuleScreen({ role, session, roleData, activeModule }) {
     if (activeModule === 'assignments') {
       return (
         <div className="dashboard-layout">
-          {card('Assignment queue', assignments.slice(0, 4).map((assignment) => ({ label: assignment.title, value: assignment.status || 'Open' })), 'orange')}
-          {card('Deadlines', [
-            { label: 'Submission due this week', value: '3' },
-            { label: 'Pending review', value: '1' },
-            { label: 'Improvement goals', value: '2' },
-          ], 'blue')}
+          <div className="panel-card">
+            <h3>Assignment queue</h3>
+            <div className="module-list interactive-list">
+              {assignments.slice(0, 4).map((assignment) => (
+                <button
+                  type="button"
+                  key={assignment.id || assignment.title}
+                  className={`course-row ${selectedAssignmentId === assignment.id ? 'active' : ''}`}
+                  onClick={() => onSelectAssignment?.(assignment)}
+                >
+                  <span>{assignment.title}</span>
+                  <span className="badge orange">{assignment.status || 'Open'}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="panel-card">
+            <h3>Assignment detail</h3>
+            {selectedAssignment ? (
+              <div className="course-detail-panel">
+                <h4>{selectedAssignment.title}</h4>
+                <p>{selectedAssignment.description || 'No assignment description available yet.'}</p>
+                <div className="course-meta">
+                  <span>Course: {selectedAssignment.course_title || 'General'}</span>
+                  <span>Deadline: {selectedAssignment.deadline ? new Date(selectedAssignment.deadline).toLocaleDateString() : 'No deadline'}</span>
+                </div>
+
+                <div className="assignment-form">
+                  <textarea
+                    value={assignmentDraft || ''}
+                    onChange={(event) => setAssignmentDraft?.(event.target.value)}
+                    placeholder="Write your answer here..."
+                  />
+                  <button type="button" className="primary-action" onClick={() => submitAssignment?.(selectedAssignment.id)} disabled={!assignmentDraft?.trim()}>
+                    Submit answer
+                  </button>
+                </div>
+
+                {assignmentSubmitState && (
+                  <p className={`submission-message ${assignmentSubmitState.ok ? 'success' : 'error'}`}>
+                    {assignmentSubmitState.message}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="muted-text">Select an assignment to view the task details.</p>
+            )}
+          </div>
         </div>
       )
     }
@@ -147,28 +248,45 @@ function RoleModuleScreen({ role, session, roleData, activeModule }) {
       )
     }
 
-    return (
-      <div className="dashboard-layout">
-        {card('Learning overview', [
-          { label: 'Enrolled courses', value: String(courses.length) },
-          { label: 'Open assignments', value: String(assignments.length) },
-          { label: 'Learning streak', value: '5 days' },
-        ], 'blue')}
-        {card('Upcoming work', assignments.slice(0, 3).map((item) => ({ label: item.title, value: item.status || 'Published' })), 'orange')}
-      </div>
-    )
+    return <LearnerDashboardPage session={session} roleData={roleData} />
   }
 
   if (role === 'instructor') {
     if (activeModule === 'courses') {
       return (
         <div className="dashboard-layout">
-          {card('Managed courses', courses.slice(0, 4).map((course) => ({ label: course.title, value: course.category || 'Course' })), 'green')}
-          {card('Course health', [
-            { label: 'Published courses', value: String(courses.filter((course) => course.status === 'Published').length) },
-            { label: 'Draft courses', value: String(courses.filter((course) => course.status !== 'Published').length) },
-            { label: 'Students active', value: '84' },
-          ], 'blue')}
+          <div className="panel-card">
+            <h3>Managed courses</h3>
+            <div className="module-list interactive-list">
+              {courses.slice(0, 4).map((course) => (
+                <button
+                  type="button"
+                  key={course.id || course.title}
+                  className={`course-row ${selectedCourseId === course.id ? 'active' : ''}`}
+                  onClick={() => onSelectCourse?.(course)}
+                >
+                  <span>{course.title}</span>
+                  <span className="badge green">{course.category || 'Course'}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="panel-card">
+            <h3>Course insight</h3>
+            {selectedCourse ? (
+              <div className="course-detail-panel">
+                <h4>{selectedCourse.title}</h4>
+                <p>{selectedCourse.description || 'This course is ready for teaching and delivery.'}</p>
+                <div className="course-meta">
+                  <span>Category: {selectedCourse.category || 'General'}</span>
+                  <span>Status: {selectedCourse.status || 'Published'}</span>
+                </div>
+                <button type="button" className="primary-action">Manage course</button>
+              </div>
+            ) : (
+              <p className="muted-text">Select a course to inspect it.</p>
+            )}
+          </div>
         </div>
       )
     }
@@ -176,12 +294,54 @@ function RoleModuleScreen({ role, session, roleData, activeModule }) {
     if (activeModule === 'assignments') {
       return (
         <div className="dashboard-layout">
-          {card('Assignments', assignments.slice(0, 4).map((assignment) => ({ label: assignment.title, value: assignment.status || 'Open' })), 'purple')}
-          {card('Grading flow', [
-            { label: 'Needs grading', value: '3' },
-            { label: 'Awaiting review', value: '2' },
-            { label: 'Average score', value: '88%' },
-          ], 'orange')}
+          <div className="panel-card">
+            <h3>Assignments</h3>
+            <div className="module-list interactive-list">
+              {assignments.slice(0, 4).map((assignment) => (
+                <button
+                  type="button"
+                  key={assignment.id || assignment.title}
+                  className={`course-row ${selectedAssignmentId === assignment.id ? 'active' : ''}`}
+                  onClick={() => onSelectAssignment?.(assignment)}
+                >
+                  <span>{assignment.title}</span>
+                  <span className="badge purple">{assignment.status || 'Open'}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="panel-card">
+            <h3>Submission detail</h3>
+            {selectedAssignment ? (
+              <div className="course-detail-panel">
+                <h4>{selectedAssignment.title}</h4>
+                <p>{selectedAssignment.description || 'No assignment description available yet.'}</p>
+                <div className="course-meta">
+                  <span>Course: {selectedAssignment.course_title || 'General'}</span>
+                  <span>Deadline: {selectedAssignment.deadline ? new Date(selectedAssignment.deadline).toLocaleDateString() : 'No deadline'}</span>
+                </div>
+
+                <div className="assignment-form">
+                  <textarea
+                    value={assignmentDraft || ''}
+                    onChange={(event) => setAssignmentDraft?.(event.target.value)}
+                    placeholder="Write your answer here..."
+                  />
+                  <button type="button" className="primary-action" onClick={() => submitAssignment?.(selectedAssignment.id)} disabled={!assignmentDraft?.trim()}>
+                    Review work
+                  </button>
+                </div>
+
+                {assignmentSubmitState && (
+                  <p className={`submission-message ${assignmentSubmitState.ok ? 'success' : 'error'}`}>
+                    {assignmentSubmitState.message}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="muted-text">Select an assignment to inspect it.</p>
+            )}
+          </div>
         </div>
       )
     }
@@ -203,20 +363,7 @@ function RoleModuleScreen({ role, session, roleData, activeModule }) {
       )
     }
 
-    return (
-      <div className="dashboard-layout">
-        {card('Teaching overview', [
-          { label: 'Managed courses', value: String(courses.length) },
-          { label: 'Assignments', value: String(assignments.length) },
-          { label: 'Instructor', value: session?.name || 'Instructor' },
-        ], 'green')}
-        {card('Teaching priorities', [
-          { label: 'Class review', value: 'This week' },
-          { label: 'Feedback queue', value: '5' },
-          { label: 'Mentoring', value: '2 sessions' },
-        ], 'blue')}
-      </div>
-    )
+    return <InstructorDashboardPage session={session} roleData={roleData} />
   }
 
   if (role === 'reviewer') {
@@ -267,79 +414,14 @@ function RoleModuleScreen({ role, session, roleData, activeModule }) {
       )
     }
 
-    return (
-      <div className="dashboard-layout">
-        {card('Review overview', [
-          { label: 'Open reviews', value: String(assignments.length) },
-          { label: 'Team members', value: String(users.filter((user) => user.role === 'Reviewer').length) },
-          { label: 'Reviewer', value: session?.name || 'Reviewer' },
-        ], 'orange')}
-        {card('Priority queue', [
-          { label: 'Needs action', value: '4' },
-          { label: 'Awaiting response', value: '2' },
-          { label: 'Escalations', value: '1' },
-        ], 'blue')}
-      </div>
-    )
+    return <ReviewerDashboardPage session={session} roleData={roleData} />
   }
 
-  if (activeModule === 'users') {
-    return (
-      <div className="dashboard-layout">
-        {card('Platform users', users.slice(0, 5).map((user) => ({ label: user.name || user.email, value: user.role })), 'purple')}
-        {card('Access management', [
-          { label: 'Admins', value: String(users.filter((user) => user.role === 'Admin').length) },
-          { label: 'Instructors', value: String(users.filter((user) => user.role === 'Instructor').length) },
-          { label: 'Learners', value: String(users.filter((user) => user.role === 'Learner').length) },
-        ], 'blue')}
-      </div>
-    )
+  if (role === 'admin') {
+    return <AdminConsolePage session={session} roleData={roleData} activeModule={activeModule} onUpdateUserRole={onUpdateUserRole} onUpdateCourse={onUpdateCourse} />
   }
 
-  if (activeModule === 'courses') {
-    return (
-      <div className="dashboard-layout">
-        {card('Course catalog', courses.slice(0, 4).map((course) => ({ label: course.title, value: course.status || 'Published' })), 'blue')}
-        {card('Catalog health', [
-          { label: 'Published', value: String(courses.filter((course) => course.status === 'Published').length) },
-          { label: 'Draft', value: String(courses.filter((course) => course.status !== 'Published').length) },
-          { label: 'Tags', value: String(new Set(courses.map((course) => course.category).filter(Boolean)).size) },
-        ], 'green')}
-      </div>
-    )
-  }
-
-  if (activeModule === 'reports') {
-    return (
-      <div className="dashboard-layout">
-        {card('Reports', [
-          { label: 'Active learners', value: String(users.filter((user) => user.role === 'Learner').length) },
-          { label: 'Assignments created', value: String(assignments.length) },
-          { label: 'Course completion', value: '74%' },
-        ], 'purple')}
-        {card('Operational trends', [
-          { label: 'Engagement', value: '+12%' },
-          { label: 'Drop-off', value: '-4%' },
-          { label: 'Avg. score', value: '88%' },
-        ], 'orange')}
-      </div>
-    )
-  }
-
-  return (
-    <div className="dashboard-layout">
-      {card('Overview', [
-        { label: 'System users', value: String(users.length) },
-        { label: 'Courses', value: String(courses.length) },
-        { label: 'Assignments', value: String(assignments.length) },
-      ], 'purple')}
-      {card('Platform status', [
-        { label: 'Admin', value: session?.name || 'Admin' },
-        { label: 'Sync status', value: 'Live' },
-        { label: 'Maintenance', value: 'None' },
-      ], 'green')}
-    </div>
-  )
+  return <AdminConsolePage session={session} roleData={roleData} activeModule={activeModule} onUpdateUserRole={onUpdateUserRole} onUpdateCourse={onUpdateCourse} />
 }
 
 async function fetchJson(url) {
@@ -360,9 +442,21 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [roleData, setRoleData] = useState({ users: [], courses: [], assignments: [] })
   const [dataLoading, setDataLoading] = useState(false)
+  const [selectedCourseId, setSelectedCourseId] = useState(null)
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState(null)
+  const [assignmentDraft, setAssignmentDraft] = useState('')
+  const [assignmentSubmitState, setAssignmentSubmitState] = useState(null)
   const [aiPrompt, setAiPrompt] = useState('')
   const [aiAnswer, setAiAnswer] = useState('')
   const [aiLoading, setAiLoading] = useState(false)
+  const [syncStatus, setSyncStatus] = useState('')
+
+  const demoAccounts = {
+    learner: { email: 'alice@lms.test', password: 'learner123' },
+    instructor: { email: 'bob@lms.test', password: 'instructor123' },
+    reviewer: { email: 'carol@lms.test', password: 'reviewer123' },
+    admin: { email: 'diana@lms.test', password: 'admin123' },
+  }
 
   useEffect(() => {
     if (!session) {
@@ -437,12 +531,14 @@ function App() {
 
       const userRole = String(result.session.role).toLowerCase()
       setSession({
+        userId: result.session.userId,
         name: result.session.name,
         role: userRole,
         email: result.session.email,
       })
       setActiveRole(userRole)
       setActiveModule('overview')
+      setSelectedCourseId(null)
     } catch (loginError) {
       setError(loginError.message || 'Không thể đăng nhập.')
     } finally {
@@ -458,6 +554,146 @@ function App() {
     setAiAnswer('')
     setAiLoading(false)
     setError('')
+    setSyncStatus('')
+    setSelectedCourseId(null)
+    setSelectedAssignmentId(null)
+    setAssignmentDraft('')
+    setAssignmentSubmitState(null)
+  }
+
+  const handleRolePreset = (roleId) => {
+    const preset = demoAccounts[roleId]
+    if (!preset) return
+
+    setForm({ email: preset.email, password: preset.password })
+    setError('')
+    setActiveRole(roleId)
+    setSelectedCourseId(null)
+    setSelectedAssignmentId(null)
+    setAssignmentDraft('')
+    setAssignmentSubmitState(null)
+  }
+
+  const refreshDashboardData = async () => {
+    setDataLoading(true)
+    setError('')
+    setSyncStatus('Đang đồng bộ dữ liệu...')
+
+    try {
+      const [usersResponse, coursesResponse, assignmentsResponse] = await Promise.all([
+        fetchJson(`${API_BASE}/api/users`),
+        fetchJson(`${API_BASE}/api/courses`),
+        fetchJson(`${API_BASE}/api/assignments`),
+      ])
+
+      setRoleData({
+        users: usersResponse.users || [],
+        courses: coursesResponse.courses || [],
+        assignments: assignmentsResponse.assignments || [],
+      })
+      setSyncStatus('Dữ liệu đã được đồng bộ thành công.')
+    } catch (refreshError) {
+      setError(refreshError.message || 'Không thể đồng bộ dữ liệu.')
+      setSyncStatus('')
+    } finally {
+      setDataLoading(false)
+    }
+  }
+
+  const handleAssignmentSubmit = async (assignmentId) => {
+    const answer = assignmentDraft.trim()
+    if (!assignmentId || !answer) {
+      setAssignmentSubmitState({ ok: false, message: 'Please enter an answer before submitting.' })
+      return
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/api/submissions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          assignmentId,
+          learnerId: session?.userId || session?.email || 'learner',
+          answer,
+        }),
+      })
+
+      const result = await response.json()
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || 'Unable to submit assignment.')
+      }
+
+      setAssignmentSubmitState({ ok: true, message: 'Assignment submitted successfully.' })
+      setAssignmentDraft('')
+    } catch (submitError) {
+      setAssignmentSubmitState({ ok: false, message: submitError.message || 'Could not submit assignment.' })
+    }
+  }
+
+  const handleUpdateUserRole = async (userId, nextRole) => {
+    if (!session || !session.userId) {
+      setError('Admin session is required.')
+      return
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/api/admin/users/${userId}/role`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-role': session.role || 'Admin',
+          'x-user-id': String(session.userId),
+        },
+        body: JSON.stringify({ role: nextRole }),
+      })
+
+      const result = await response.json()
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || 'Unable to update role.')
+      }
+
+      setRoleData((current) => ({
+        ...current,
+        users: (current.users || []).map((user) => (user.id === userId ? { ...user, role: result.user.role } : user)),
+      }))
+      setSyncStatus('User role updated successfully.')
+      setError('')
+    } catch (roleError) {
+      setError(roleError.message || 'Could not update user role.')
+    }
+  }
+
+  const handleUpdateCourse = async (courseId, patch) => {
+    if (!session || !session.userId) {
+      setError('Admin session is required.')
+      return
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/api/admin/courses/${courseId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-role': session.role || 'Admin',
+          'x-user-id': String(session.userId),
+        },
+        body: JSON.stringify(patch),
+      })
+
+      const result = await response.json()
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || 'Unable to update course.')
+      }
+
+      setRoleData((current) => ({
+        ...current,
+        courses: (current.courses || []).map((course) => (course.id === courseId ? { ...course, ...result.course } : course)),
+      }))
+      setSyncStatus('Course updated successfully.')
+      setError('')
+    } catch (courseError) {
+      setError(courseError.message || 'Could not update course.')
+    }
   }
 
   const handleAiAsk = async () => {
@@ -471,13 +707,18 @@ function App() {
     setError('')
 
     try {
-      const response = await fetch(`${API_BASE}/api/ai/chat`, {
+      const msg = prompt.toLowerCase()
+      const intent = msg.includes('example') || msg.includes('illustrate') ? 'example' : 'explain'
+
+      const response = await fetch(`${API_BASE}/api/tutor/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question: prompt,
           lessonId: 'lesson-1',
-          learnerId: session?.email || 'learner',
+          learnerId: session?.userId || session?.email || 'learner',
+          sessionId: session?.userId || session?.email || 'learner',
+          intent,
         }),
       })
 
@@ -502,6 +743,20 @@ function App() {
       session={{ ...session, aiPrompt, aiAnswer, aiLoading, handleAiAsk, setAiPrompt }}
       roleData={roleData}
       activeModule={activeModule}
+      selectedCourseId={selectedCourseId}
+      onSelectCourse={(course) => setSelectedCourseId(course?.id || null)}
+      selectedAssignmentId={selectedAssignmentId}
+      onSelectAssignment={(assignment) => {
+        setSelectedAssignmentId(assignment?.id || null)
+        setAssignmentSubmitState(null)
+        setAssignmentDraft('')
+      }}
+      assignmentDraft={assignmentDraft}
+      setAssignmentDraft={setAssignmentDraft}
+      submitAssignment={handleAssignmentSubmit}
+      assignmentSubmitState={assignmentSubmitState}
+      onUpdateUserRole={handleUpdateUserRole}
+      onUpdateCourse={handleUpdateCourse}
     />
   )
 
@@ -513,6 +768,20 @@ function App() {
           <h1>Đăng nhập hệ thống</h1>
 
           <form onSubmit={handleSubmit} className="login-form">
+            <div className="role-picker" aria-label="Quick login roles">
+              {roleConfig.map((role) => (
+                <button
+                  key={role.id}
+                  type="button"
+                  className={`role-card ${activeRole === role.id ? 'active' : ''}`}
+                  onClick={() => handleRolePreset(role.id)}
+                >
+                  <span className={`dot ${role.accent}`} />
+                  <span>{role.name}</span>
+                </button>
+              ))}
+            </div>
+
             <label>
               Email
               <input
@@ -577,7 +846,19 @@ function App() {
               key={item.id}
               type="button"
               className={`nav-button ${activeModule === item.id ? 'active' : ''}`}
-              onClick={() => setActiveModule(item.id)}
+              onClick={() => {
+                setActiveModule(item.id)
+                if (item.id !== 'courses') {
+                  setSelectedCourseId(null)
+                }
+                if (item.id !== 'assignments') {
+                  setSelectedAssignmentId(null)
+                }
+                if (item.id !== 'assignments') {
+                  setAssignmentDraft('')
+                  setAssignmentSubmitState(null)
+                }
+              }}
             >
               <span className={`dot ${roleConfig.find((role) => role.id === activeRole)?.accent || 'blue'}`} />
               <span>
@@ -599,10 +880,12 @@ function App() {
             <p className="eyebrow">Role module</p>
             <h2>{currentModuleItems.find((item) => item.id === activeModule)?.label || 'Overview'} · {roleConfig.find((role) => role.id === activeRole)?.name}</h2>
           </div>
-          <button type="button" className="primary-action">
-            Sync live data
+          <button type="button" className="primary-action" onClick={refreshDashboardData} disabled={dataLoading}>
+            {dataLoading ? 'Đang đồng bộ...' : 'Sync live data'}
           </button>
         </header>
+
+        {syncStatus && <p className="sync-status" aria-live="polite">{syncStatus}</p>}
 
         <section className="stats-grid" aria-label="Platform metrics">
           {stats.map((stat) => (
