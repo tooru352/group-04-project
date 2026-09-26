@@ -1,11 +1,7 @@
 {
-  "buildCommand": "cd web && npm install && npm run build",
+  "buildCommand": "npm --prefix web install && npm --prefix web run build",
   "outputDirectory": "web/dist",
-  "installCommand": "echo 'Skipping root install'",
-  "framework": null,
-  "env": {
-    "VITE_API_BASE_URL": "@vite_api_base_url"
-  },
+  "installCommand": "npm install",
   "rewrites": [
     {
       "source": "/(.*)",
