@@ -1,43 +1,47 @@
-# Changelog
+# Nhật ký thay đổi (Changelog)
 
-All notable changes for this project are documented here.
+> **Mục đích & Chức năng của file này:** File này dùng để ghi lại lịch sử tất cả các thay đổi, tính năng mới được thêm vào, các điểm đã chỉnh sửa, các lỗi (bugs) đã được sửa chữa, vấn đề còn tồn đọng và hướng dẫn nâng cấp qua các phiên bản phát hành của dự án LMS.
+
+---
 
 ## [v1.0.0-final] - 2026-09-26
 
-### Added
-- Role-based login and user access flow for Learner, Instructor, Reviewer, and Admin.
-- Course listing and lesson tracking functionality.
-- Enrollment and completion management.
-- Assignment and submission workflows.
-- Reviewer grading and feedback flow.
-- Admin management support.
-- AI Tutor backend endpoint and frontend integration.
-- Database bootstrap with automatic schema initialization and seeded test data.
-- Frontend role-based dashboard structure.
+### 🚀 Tính năng đã thêm (Added)
+- Luồng đăng nhập và phân quyền truy cập theo vai trò (Learner, Instructor, Reviewer, Admin).
+- Chức năng hiển thị danh sách khóa học và theo dõi tiến độ bài học.
+- Quản lý đăng ký khóa học (Enrollment) và đánh dấu hoàn thành bài học (Completion).
+- Luồng giao bài tập (Assignment) và nộp bài làm (Submission).
+- Quy trình chấm điểm và phản hồi của người chấm bài (Reviewer grading & feedback).
+- Chức năng quản trị người dùng và giám sát hệ thống dành cho Admin.
+- Tích hợp điểm cuối API backend và giao diện trợ lý học tập AI Tutor.
+- Tự động tạo bảng (schema) và nạp dữ liệu mẫu (seed data) cho cơ sở dữ liệu khi khởi động.
+- Cấu trúc giao diện điều hướng theo vai trò ở phần Frontend.
 
-### Changed
-- Base API and frontend behavior aligned to the project requirement and role rules.
-- Validation tightened to reject blank and whitespace-only inputs.
-- Access control tightened for protected routes and sensitive actions.
-- QA, security, and release documentation updated to match observed product behavior.
+### 🔄 Các thay đổi & cải tiến (Changed)
+- Đồng bộ hóa hành vi của API và Frontend theo đúng tài liệu yêu cầu nghiệp vụ và quy tắc vai trò.
+- Thắt chặt kiểm tra dữ liệu đầu vào (Validation): Từ chối các chuỗi rỗng hoặc chỉ chứa khoảng trắng.
+- Tăng cường kiểm soát truy cập (RBAC) trên các tuyến đường bảo vệ (protected routes) và các thao tác nhạy cảm.
+- Cập nhật tài liệu kiểm thử QA, bảo mật và phát hành phù hợp với hành vi thực tế của sản phẩm.
 
-### Fixed
-- Stale startup issues related to old server processes and port collisions.
-- Missing or weak role enforcement on instructor/reviewer/admin actions.
-- Invalid data acceptance for grade, comments, and title/content fields.
-- Inconsistencies between test evidence and documentation.
-- Bootstrap and seed data reliability for local environment setup.
+### 🛠️ Các lỗi đã sửa (Fixed)
+- Sửa lỗi xung đột cổng kết nối và tiến trình cũ khi khởi động server local.
+- Sửa lỗi thiếu hoặc lỏng lẻo trong việc kiểm tra phân quyền cho các hành động của Instructor, Reviewer, Admin.
+- Sửa lỗi chấp nhận dữ liệu không hợp lệ (điểm số vượt khoảng, nhận xét rỗng, tiêu đề rỗng).
+- Khắc phục sự bất đồng nhất giữa bằng chứng kiểm thử tự động và tài liệu mô tả.
+- Tăng tính ổn định cho quá trình bootstrapping và khởi tạo dữ liệu seed cho môi trường phát triển local.
 
-### Known issues
-- Production environment requires valid `.env` configuration.
-- AI Tutor behavior depends on backend service availability and runtime configuration.
-- Browser differences may affect the exact front-end experience.
+### ⚠️ Các vấn đề còn tồn đọng (Known issues)
+- Môi trường Production yêu cầu cấu hình chính xác các biến trong file `.env`.
+- Phản hồi của AI Tutor phụ thuộc vào tính sẵn sàng của dịch vụ Backend và cấu hình runtime (OpenAI API key).
+- Sự khác biệt giữa các trình duyệt có thể ảnh hưởng nhỏ đến trải nghiệm giao diện người dùng.
 
-### Upgrade notes
-- Use `.env.example` as the basis for local configuration.
-- Ensure the database is reachable before starting the API.
-- Validate login, role routes, and core workflows after deployment.
-- If a migration has already been applied, prefer a forward fix over a blind schema rollback.
+### 📌 Hướng dẫn nâng cấp & Triển khai (Upgrade notes)
+- Sử dụng `.env.example` làm căn cứ để tạo cấu hình cho môi trường local.
+- Đảm bảo cơ sở dữ liệu có thể kết nối trước khi khởi động API backend.
+- Kiểm tra lại các luồng đăng nhập, tuyến đường vai trò và các quy trình chính sau khi triển khai.
+- Nếu một migration đã áp dụng vào dữ liệu thực tế, hãy dùng phương pháp sửa tiến (forward fix) thay vì rollback schema một cách thụ động.
 
-## Previous state
-- Project was initialized as a scaffold and evolved into the first working role-based LMS release.
+---
+
+## 📜 Trạng thái trước đây (Previous state)
+- Dự án ban đầu từ một khung sườn (scaffold) cơ bản và đã được phát triển hoàn thiện thành phiên bản phát hành LMS phân quyền đầu tiên.

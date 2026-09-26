@@ -1,275 +1,183 @@
-# LMS Project
+# Tài liệu dự án LMS (Learning Management System)
 
-A role-based learning management system with a Node.js/Express API, PostgreSQL/Supabase-backed data layer, React frontend, and Python automation tests.
+> **Mục đích & Chức năng của file này:** Đây là tài liệu chính của dự án, cung cấp cái nhìn tổng quan về hệ thống LMS quản lý học tập theo vai trò. Tệp chứa hướng dẫn chi tiết về cấu trúc thư mục, cài đặt môi trường phát triển, cách chạy ứng dụng (Backend API & React Frontend), dữ liệu mẫu (seed data), lệnh chạy test case, hướng dẫn triển khai (deploy) và các bước xử lý sự cố thường gặp.
 
-## Overview
+---
 
-- Backend: Node.js + Express + PostgreSQL
-- Frontend: Vite + React
-- Database bootstrap: automatic schema + seed data in `server/db.js`
-- Automated validation: Python tests under `tests/`
-- Roles: Learner, Instructor, Reviewer, Admin
+## 1. Tổng quan hệ thống (Overview)
 
-## Repository layout
+- **Backend**: Node.js + Express + PostgreSQL (Supabase / Postgres Local)
+- **Frontend**: Vite + React
+- **Khởi tạo Database**: Tự động khởi tạo schema và nạp dữ liệu mẫu trong `server/db.js`
+- **Kiểm thử tự động**: Bộ test case tự động bằng Python nằm trong thư mục `tests/`
+- **Các vai trò người dùng (Roles)**: Learner (Học viên), Instructor (Giảng viên), Reviewer (Người chấm bài), Admin (Quản trị viên)
+
+---
+
+## 2. Cấu trúc thư mục (Repository layout)
 
 ```text
 .
-├─ .env.example
+├─ .env.example              # File mẫu cấu hình biến môi trường
 ├─ .github/
-│  └─ workflows/
-│     └─ ci.yml
-├─ Dockerfile
-├─ docker-compose.yml
-├─ docs/
-├─ package.json
+│  └─ workflows/             # Cấu hình GitHub Actions CI/CD (ci.yml, pages.yml)
+├─ Dockerfile                # File đóng gói container cho Backend API
+├─ docker-compose.yml        # File chạy container Backend + Frontend
+├─ docs/                     # Thư mục tài liệu yêu cầu & kỹ thuật
+├─ package.json              # Cấu hình scripts và dependencies của dự án Node.js
 ├─ server/
-│  ├─ db.js
-│  ├─ index.js
-│  └─ test_connection.js
-├─ tests/
-├─ web/
+│  ├─ db.js                  # Khởi tạo DB schema, kết nối và nạp seed data
+│  ├─ index.js               # Mã nguồn chính của REST API server
+│  └─ test_connection.js     # Script kiểm tra kết nối CSDL
+├─ tests/                    # Thư mục chứa 202 test cases tự động (Pytest)
+├─ web/                      # Mã nguồn ứng dụng Frontend React (Vite)
 │  ├─ Dockerfile
 │  ├─ package.json
 │  └─ src/
-└─ README.md
+└─ README.md                 # Tài liệu hướng dẫn sử dụng dự án
 ```
 
-## Prerequisites
+---
 
-- Node.js 18+
-- npm
-- Python 3.11+
-- PostgreSQL database or Supabase project
-- Access to a working `DATABASE_URL`
+## 3. Yêu cầu tiền đề (Prerequisites)
 
-## Setup
+- **Node.js**: Phiên bản 18 trở lên
+- **npm**: Trình quản lý gói Node.js
+- **Python**: Phiên bản 3.11 trở lên (dùng để chạy pytest)
+- **PostgreSQL**: Cơ sở dữ liệu PostgreSQL local hoặc Supabase project
+- **DATABASE_URL**: Chuỗi kết nối CSDL PostgreSQL khả dụng
 
-1. Clone the repository.
-2. Copy the environment template:
+---
+
+## 4. Hướng dẫn cài đặt (Setup)
+
+1. Clone repository về máy local:
+2. Tạo file cấu hình môi trường `.env` từ file mẫu:
 
 ```bash
 copy .env.example .env
 ```
 
-3. Update `.env` with real values:
+3. Cập nhật các giá trị thực tế trong file `.env`:
 
 ```env
 PORT=4000
 NODE_ENV=development
 DATABASE_URL=postgresql://user:password@host:5432/dbname
 JWT_SECRET=replace_with_secure_secret
-VITE_API_BASE_URL=group-04-project-production.up.railway.app
+VITE_API_BASE_URL=http://localhost:4000
 ```
 
-Notes:
-- `DATABASE_URL` is required for the API to connect to PostgreSQL.
-- `VITE_API_BASE_URL` is used by the frontend to call the backend.
-- The app does not rely on hidden local state; it reads config strictly from environment variables.
+*Ghi chú:*
+- `DATABASE_URL` bắt buộc phải có để API kết nối tới PostgreSQL.
+- `VITE_API_BASE_URL` được sử dụng bởi Frontend để gọi API Backend.
 
-## Dependencies
+---
+
+## 5. Cài đặt thư viện phụ thuộc (Dependencies)
+
+Cài đặt cho cả root backend và web frontend:
 
 ```bash
 npm install
 npm --prefix web install
 ```
 
-## Seed data and bootstrapping
+---
 
-The database initialization is handled in `server/db.js`.
+## 6. Khởi tạo dữ liệu mẫu (Seed Data & Bootstrapping)
 
-On startup, the backend creates the core tables if they do not exist and inserts seed data when empty, including:
+Việc khởi tạo cơ sở dữ liệu được tự động xử lý trong `server/db.js`.
 
-- `alice@lms.test` / `learner123` – Learner
-- `bob@lms.test` / `instructor123` – Instructor
-- `carol@lms.test` / `reviewer123` – Reviewer
-- `diana@lms.test` / `admin123` – Admin
+Khi khởi động backend, hệ thống sẽ tự động tạo các bảng nếu chưa có và chèn dữ liệu mẫu ban đầu:
 
-These credentials are for local/dev verification only.
+- **Học viên (Learner)**: `alice@lms.test` / `learner123`
+- **Giảng viên (Instructor)**: `bob@lms.test` / `instructor123`
+- **Người chấm bài (Reviewer)**: `carol@lms.test` / `reviewer123`
+- **Quản trị viên (Admin)**: `diana@lms.test` / `admin123`
 
-## Run the app
+*Tài khoản này chỉ dùng cho mục đích kiểm thử và phát triển ở môi trường Local/Dev.*
 
-Start the backend:
+---
+
+## 7. Khởi chạy ứng dụng (Run the app)
+
+Chạy **Backend API** (Cổng 4000):
 
 ```bash
 npm run api
 ```
 
-Start the frontend in a second terminal:
+Chạy **Frontend React** (mở cửa sổ terminal thứ 2):
 
 ```bash
 npm --prefix web run dev -- --host 0.0.0.0
 ```
 
-Optional: run both together:
+Hoặc chạy đồng thời cả Backend và Frontend cùng lúc:
 
 ```bash
 npm run dev
 ```
 
-### Verify the app is working
+### Kiểm tra ứng dụng hoạt động:
 
-- Backend health:
+- **Kiểm tra sức khỏe Backend (Health Check)**:
+  ```bash
+  curl http://localhost:4000/api/health
+  ```
+  *Kết quả kỳ vọng:* `{ "ok": true, "db": "connected", ... }`
 
-```bash
-curl http://localhost:4000/api/health
-```
+- **Truy cập Frontend**: Mở trình duyệt tại địa chỉ Vite hiển thị (thường là `http://localhost:5173`).
+- **Đăng nhập thử** bằng tài khoản học viên mẫu: `alice@lms.test` / `learner123`.
 
-Expected result: `ok: true` and database status.
+---
 
-- Frontend: open the Vite URL shown in the terminal, typically:
+## 8. Chạy bộ kiểm thử (Test suite)
 
-```text
-http://localhost:5173
-```
-
-- Login test with a seeded account:
-  - `alice@lms.test` / `learner123`
-
-## Test suite
-
-Run the project validation checks:
+Chạy các lệnh kiểm tra và xác minh dự án:
 
 ```bash
+# Kiểm tra lỗi kiểu dữ liệu TypeScript
 npm run typecheck
-python -m pytest tests -q
+
+# Chạy toàn bộ 202 test cases tự động bằng Pytest
+python -m pytest tests -v
 ```
 
-### Test AI Tutor
+### Kiểm thử riêng chức năng AI Tutor:
 
-After starting the backend, test AI Tutor functionality:
+Sau khi bật Backend server, có thể test riêng tính năng trợ lý AI:
 
 ```bash
-# Reset database to load detailed lesson content
+# Reset lại database để tải dữ liệu nội dung bài học chi tiết
 node reset_database.js
 
-# Test AI Tutor locally (requires jq for JSON formatting)
+# Test AI Tutor ở môi trường local
 bash test_ai_tutor_quick.sh
-
-# Or test on production Railway
-bash test_ai_production.sh
 ```
 
-Expected AI Tutor behavior:
-- ✅ Answers questions based on lesson content
-- ✅ Provides relevant examples from course material
-- ✅ Rejects off-topic questions with "KHÔNG ĐỦ DỮ LIỆU" message
-- ✅ References specific concepts like empathy mapping, prototyping methods, design systems
+---
 
-See [test_ai_tutor.md](test_ai_tutor.md) for detailed test cases.
+## 9. Triển khai (Deploy)
 
-If you need a quick smoke check for the API:
+1. Chuẩn bị các biến môi trường cho sản phẩm (Production ENV).
+2. Đảm bảo Database reachable và schema đã được khởi tạo.
+3. Chạy Backend API với biến môi trường Production.
+4. Build và serve phần Frontend (`npm --prefix web run build`).
 
-```bash
-curl http://localhost:4000/api/users
-```
+---
 
-## Deploy
+## 10. Xử lý sự cố (Troubleshooting)
 
-1. Prepare production environment variables.
-2. Ensure the database is reachable and the schema is initialized.
-3. Start the API with the production env file.
-4. Build and serve the frontend.
-5. Run a smoke test against the deployed environment.
+1. **Backend không khởi động được:**
+   - Kiểm tra xem file `.env` đã có và chuỗi `DATABASE_URL` có hợp lệ hay không.
+   - Kiểm tra kết nối cơ sở dữ liệu PostgreSQL / Supabase.
+   - Kiểm tra cổng `4000` có bị ứng dụng khác chiếm dụng không.
 
-### Production Health Checks
+2. **Frontend không gọi được API Backend:**
+   - Kiểm tra biến `VITE_API_BASE_URL` trong `.env`.
+   - Đảm bảo Backend đang chạy ở `http://localhost:4000`.
 
-After deployment, verify these endpoints:
-
-**Backend (Railway):**
-```bash
-curl https://group-04-project-production.up.railway.app/api/health
-```
-Expected: `{"ok":true,"db":"connected",...}`
-
-**Frontend (Vercel):**
-- Open your Vercel URL
-- Verify login page loads
-- Test login with seed account
-
-### Docker / Compose
-
-```bash
-docker compose up --build
-```
-
-This repo includes Docker assets for running the API and frontend containers with automated health checks.
-
-## Rollback and forward-fix
-
-- If the release fails before a migration-dependent write occurs, rollback the application code and keep the database unchanged.
-- If a migration or data change already ran and affected live data, do not blindly downgrade the schema. Deploy a forward fix or incremental migration instead.
-- Always validate health checks, login flow, and critical role workflows after recovery.
-
-## Troubleshooting
-
-### 1) Backend fails to start
-
-Check:
-- `.env` exists and `DATABASE_URL` is valid
-- PostgreSQL/Supabase is reachable
-- port `4000` is not already occupied
-
-Useful commands:
-
-```bash
-npm run api
-```
-
-If the port is busy, terminate stale Node processes and retry.
-
-### 2) Frontend cannot reach the API
-
-Check:
-- `VITE_API_BASE_URL` in `.env`
-- backend is running on `http://localhost:4000`
-- CORS is enabled on the API
-
-### 3) Login fails
-
-Use one of the seeded credentials from the DB bootstrap:
-
-```text
-alice@lms.test / learner123
-bob@lms.test / instructor123
-carol@lms.test / reviewer123
-diana@lms.test / admin123
-```
-
-### 4) Database connection issues
-
-Verify:
-
-```bash
-node server/test_connection.js
-```
-
-or test the configured database connection directly in the environment.
-
-### 5) Tests fail unexpectedly
-
-Run the exact validation script used by the project:
-
-```bash
-python -m pytest tests -q
-```
-
-If failures are role-based or validation-based, inspect the failing test case and match the expected business rules from the project requirement docs.
-
-## Security and operational notes
-
-- Never commit real secrets to source control.
-- Use environment variables for all credentials.
-- Keep role checks enforced on the server side.
-- Validate input, especially blank/whitespace-only values and unauthorized role actions.
-
-## Quick reference
-
-```bash
-copy .env.example .env
-npm install
-npm --prefix web install
-npm run api
-npm --prefix web run dev -- --host 0.0.0.0
-python -m pytest tests -q
-```
-
+3. **Lỗi khi chạy test:**
+   - Chạy lệnh test chi tiết: `python -m pytest tests -v` để xem nguyên nhân thất bại cụ thể ở từng testcase.

@@ -1,16 +1,35 @@
-# React + Vite
+# ⚡ Hướng dẫn Ứng dụng Web Frontend (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> **Mục đích & Chức năng của file này:** File này cung cấp tài liệu hướng dẫn và cấu hình cơ bản cho ứng dụng Frontend xây dựng bằng React và Vite. Hướng dẫn bao gồm cách phát triển giao diện, tích hợp công cụ kiểm tra mã nguồn (Oxlint/ESLint) và lưu ý về hiệu năng khi build ứng dụng.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Công nghệ sử dụng
 
-## React Compiler
+Ứng dụng Frontend sử dụng **Vite** kết hợp **React 19** cho tốc độ phản hồi nhanh và phát triển tính năng tức thì (HMR - Hot Module Replacement).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 🛠️ Hướng dẫn phát triển
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- **Khởi chạy môi trường Dev:**
+  ```bash
+  npm --prefix web run dev
+  ```
+
+- **Build sản phẩm Production:**
+  ```bash
+  npm --prefix web run build
+  ```
+
+- **Kiểm tra linter mã nguồn:**
+  ```bash
+  npm --prefix web run lint
+  ```
+
+---
+
+## 📌 Lưu ý cấu hình & Hiệu năng
+
+- Ứng dụng đã được tối ưu hóa cấu hình Vite để đảm bảo thời gian đóng gói sản phẩm cực nhanh.
+- Các quy tắc kiểm tra linter giúp duy trì chất lượng mã nguồn sạch, phát hiện sớm các lỗi cú pháp và đảm bảo chuẩn React hooks.

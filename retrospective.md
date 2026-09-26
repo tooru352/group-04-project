@@ -1,57 +1,52 @@
-# 18.35. Output #35 - Retrospective / AI Metrics
+# Báo cáo Đánh giá & Chỉ số Sử dụng AI (Retrospective / AI Metrics)
 
-| Metric | Kết quả mẫu | Ý nghĩa |
-| --- | --- | --- |
-| Requirement-to-story traceability | 30/30 stories mapped to requirement and implementation evidence | Khớng còn scope mơ hồ; mọi story đều có nguồn chứng minh |
-| Automated critical E2E / regression | 202/202 tests passed via `python -m pytest tests -q` | Hệ thống đạt mức regression kiểm soát và có evidence thực tế |
-| Command benchmark / prompt safety | 0 unsupported business rule accepted after review | AI output phải được kiểm tra lại trước khi dùng làm source-of-truth |
-| AI-generated defects caught before merge | 4 major issues caught and corrected before finalization | Team đã duy trì quality gate bằng review và verification |
-| AI-assisted implementation time | Không có timer chính thức, nhưng workflow rút ngắn đáng kể trong docs và traceability | AI giúp tăng tốc nhưng không thay thế human review |
-
-Trung 40
+> **Mục đích & Chức năng của file me này:** Đây là tài liệu tổng kết quy trình làm việc và đánh giá hiệu quả sử dụng AI trong dự án. Tệp ghi lại các chỉ số đo lường chất lượng, những việc AI làm tốt, các lỗi do AI tạo ra (kèm bằng chứng đối chiếu và cách khắc phục), bài học kinh nghiệm thu được và kết luận về việc kiểm soát chất lượng phần mềm khi ứng dụng AI.
 
 ---
 
-| Metric | Kết quả mẫu | Ý nghĩa |
+## 1. Bảng chỉ số đánh giá hiệu quả AI (AI Metrics Summary)
+
+| Chỉ số (Metric) | Kết quả thực tế | Ý nghĩa & Đánh giá |
 | --- | --- | --- |
-| AI-generated defects caught before merge | 4 findings | Review/test đã bắt được sai sót trước khi merge |
-| Reusable artifacts | 6 prompt/template/doc artifacts reused | Có thể tái sử dụng cho các dự án tiếp theo |
+| Traceability từ Yêu cầu đến Story | 30/30 stories được ánh xạ hoàn toàn tới yêu cầu và bằng chứng code | Không còn phạm vi mơ hồ; mọi story đều có nguồn chứng minh rõ ràng |
+| Kiểm thử tự động E2E / Regression | 202/202 tests PASSED (`python -m pytest tests -v`) | Hệ thống đạt mức regression kiểm soát tốt và có bằng chứng thực tế |
+| An toàn lệnh & Quy tắc nghiệp vụ | 0 quy tắc sai được chấp nhận sau kiểm duyệt | Output của AI phải được đối chiếu trước khi dùng làm source-of-truth |
+| Lỗi do AI phát hiện trước khi merge | 6 vấn đề lớn được phát hiện và sửa chữa kịp thời | Đội ngũ duy trì quality gate bằng review thủ công và test tự động |
+| Thời gian hỗ trợ từ AI | Tốc độ soạn thảo tài liệu và lập matrix tăng đáng kể | AI giúp tăng tốc chuẩn hóa tài liệu nhưng không thay thế kiểm thử con người |
 
-## 1. What AI did well
+---
 
-- AI hỗ trợ nhanh trong việc tổng hợp requirement, task catalog và traceability draft.
-- AI rút ngắn thời gian viết tài liệu và chuẩn hóa format báo cáo.
-- AI giúp tạo nhanh các template như README, RUNBOOK, RELEASE, CHANGELOG, TRACEABILITY, AI_USAGE_LOG.
+## 2. Những việc AI hỗ trợ tốt (What AI did well)
 
-## 2. AI mistakes identified with evidence
+- Hỗ trợ nhanh chóng trong việc tổng hợp yêu cầu, danh mục nhiệm vụ (task catalog) và bản phác thảo traceability matrix.
+- Rút ngắn đáng kể thời gian viết tài liệu kỹ thuật và chuẩn hóa định dạng báo cáo.
+- Tạo nhanh các khung template chuẩn như `README`, `RUNBOOK`, `RELEASE`, `CHANGELOG`, `TRACEABILITY`, `AI_USAGE_LOG`.
+- Tự động tạo và thực thi các kịch bản kiểm thử tự động quy mô lớn (202 test cases).
 
-| STT | Sai xót của AI | Evidence cụ thể | Cách kiểm chứng / sửa |
+---
+
+## 3. Các sai sót của AI được phát hiện kèm bằng chứng (AI mistakes identified)
+
+| STT | Sai sót của AI | Bằng chứng cụ thể (Evidence) | Cách kiểm chứng & Sửa chữa |
 | --- | --- | --- | --- |
-| 1 | AI đề xuất “Submission sau deadline phải bị từ chối” | [docs/02-vault/source-priority.md](docs/02-vault/source-priority.md), [docs/08-quality/bug-log.md](docs/08-quality/bug-log.md), [docs/01-discovery/5.requirements.md](docs/01-discovery/5.requirements.md) | Đối chiếu với source-of-truth; nhóm xác nhận rằng late submission được chấp nhận và đánh dấu Late, không bị chặn. |
-| 2 | AI thêm scope mới không có evidence trong requirement | [docs/01-discovery/5.requirements.md](docs/01-discovery/5.requirements.md), [docs/03-product/taiga-backlog.md](docs/03-product/taiga-backlog.md) | Theo source priority, mọi scope mới phải có requirement/decision xác nhận; nếu không, loại bỏ hoặc ghi là assumption. |
-| 3 | AI tạo traceability không khớp implementation thực tế | [server/index.js](server/index.js), [server/db.js](server/db.js), [docs/05-technical/API.md](docs/05-technical/API.md) | Kiểm tra API thật và schema thực tế, sau đó sửa matrix để khớp với code và test. |
-| 4 | AI viết docs theo template chung, không phù hợp với dự án LMS thật | [README.md](README.md), [RELEASE.md](RELEASE.md), [CHANGELOG.md](CHANGELOG.md), [docs/RUNBOOK.md](docs/RUNBOOK.md) | Team sửa lại doc để phản ánh đúng chức năng LMS: role-based auth, course, lesson, assignment, reviewer, AI Tutor. |
-| 5 | AI bỏ qua edge case validation như input rỗng / khoảng trắng | [server/index.js](server/index.js) | Dùng logic kiểm tra có giá trị ngữ nghĩa; fix bằng validation nghiêm ngặt trước khi xử lý dữ liệu. |
-| 6 | AI có thể bỏ qua RBAC / security checks nếu không kiểm tra kỹ | [server/index.js](server/index.js), [docs/08-quality/bug-log.md](docs/08-quality/bug-log.md) | Dùng middleware `requireRole` / `requireAdmin` và xác minh bằng test quyền, không tin vào output AI. |
+| 1 | AI đề xuất “Bài nộp sau deadline phải bị hệ thống từ chối hoàn toàn” | `docs/02-vault/source-priority.md`, `docs/08-quality/bug-log.md` | Đối chiếu với requirement chuẩn: Nhóm xác nhận nộp muộn vẫn được chấp nhận và chỉ đánh dấu mác `Is Late`. |
+| 2 | AI tự thêm phạm vi (scope) mới không có trong yêu cầu ban đầu | `docs/01-discovery/5.requirements.md`, `docs/03-product/taiga-backlog.md` | Theo quy tắc ưu tiên nguồn tin: Mọi tính năng mới phải có yêu cầu xác nhận; nếu không có phải loại bỏ hoặc ghi rõ là giả định. |
+| 3 | AI tạo ma trận truy xuất (traceability) không khớp với code thực tế | `server/index.js`, `server/db.js`, `docs/05-technical/API.md` | Kiểm tra lại các endpoint API thực tế và DB schema, sau đó cập nhật lại ma trận cho khớp 100% với mã nguồn. |
+| 4 | AI viết tài liệu theo template chung chung, không sát dự án LMS thực tế | `README.md`, `RELEASE.md`, `CHANGELOG.md` | Chỉnh sửa lại toàn bộ tài liệu để phản ánh đúng các tính năng LMS: RBAC auth, khóa học, bài học, bài tập, chấm điểm và AI Tutor. |
+| 5 | AI bỏ qua các trường hợp kiểm tra biên (Edge Cases) như chuỗi rỗng / khoảng trắng | `server/index.js` | Thêm hàm kiểm tra giá trị ngữ nghĩa (`hasMeaningfulText`) và thắt chặt validation trước khi lưu dữ liệu. |
+| 6 | AI không tự động khôi phục dữ liệu mẫu sau khi chạy test nâng quyền user | `tests/test_backend_unit_tc001_tc084.py`, `tests/test_api_endpoints_tc085_tc125.py` | Thêm bước cleanup khôi phục vai trò `Learner` cho tài khoản mẫu ngay ở cuối bài test. |
 
-## 3. Lessons learned
+---
 
-- Keep: Story Spec + tool schema + structured prompt + human review.
-- Improve: QA benchmark cần thêm conflict case và factual case rõ ràng hơn.
-- Stop: Không để AI tự suy đoán thêm scope hoặc business rule mới.
-- Next experiment: đánh giá 30 utterances với test structured command tự động trong CI.
+## 4. Bài học kinh nghiệm (Lessons learned)
 
-## 4. Evidence and repository references
+- **Nên tiếp tục (Keep):** Duy trì quy trình Story Spec + Quy tắc nguồn tin + Đánh giá mã nguồn của con người (Human review).
+- **Cần cải thiện (Improve):** Bộ benchmark QA cần bổ sung thêm các case xung đột dữ liệu và case thực tế rõ ràng hơn.
+- **Dừng lại (Stop):** Không để AI tự suy đoán thêm phạm vi hoặc quy tắc nghiệp vụ mới ngoài yêu cầu.
+- **Thử nghiệm tiếp theo (Next):** Tích hợp kiểm thử tự động các kịch bản tương tác người dùng vào đường ống CI/CD.
 
-- Requirement + business rule baseline: [docs/01-discovery/5.requirements.md](docs/01-discovery/5.requirements.md)
-- Source-of-truth priority: [docs/02-vault/source-priority.md](docs/02-vault/source-priority.md)
-- Story backlog: [docs/03-product/taiga-backlog.md](docs/03-product/taiga-backlog.md)
-- Traceability: [docs/05-technical/TRACEABILITY.md](docs/05-technical/TRACEABILITY.md)
-- Backend and validation logic: [server/index.js](server/index.js)
-- Database bootstrap: [server/db.js](server/db.js)
-- Test verification: [tests](tests)
-- AI log and retrospective: [docs/AI_USAGE_LOG.md](docs/AI_USAGE_LOG.md), [retrospective.md](retrospective.md)
+---
 
-## 5. Final takeaway
+## 5. Kết luận chung (Final takeaway)
 
-AI là công cụ hỗ trợ tăng tốc, nhưng không được dùng làm source-of-truth. Trong dự án này, các sai sót của AI đã được phát hiện và sửa bằng cách đối chiếu với requirement, code và test thực tế. Điều này giúp hệ thống duy trì được tính đúng đắn về nghiệp vụ, bảo mật và chất lượng sản phẩm.
+AI là một công cụ tuyệt vời giúp tăng tốc độ phát triển phần mềm và tạo tài liệu, nhưng **không bao giờ được sử dụng làm nguồn sự thật duy nhất (source-of-truth)**. Trong dự án này, toàn bộ các sai sót của AI đều được phát hiện và xử lý triệt để thông qua việc đối chiếu với yêu cầu nghiệp vụ, kiểm thử tự động và rà soát mã nguồn thực tế. Điều này đảm bảo hệ thống đạt chất lượng cao nhất về tính đúng đắn, bảo mật và độ tin cậy.

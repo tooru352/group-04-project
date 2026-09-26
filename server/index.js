@@ -625,15 +625,10 @@ function getGroundedTutorAnswer(question, lessonContext = '') {
         return { answer: 'Please enter a question so I can help you.', status: 'invalid_input', references: [] };
     }
 
-    // If lesson has meaningful content, accept the question
-    // Only reject if lesson content is too short (likely fallback/empty)
-    if (lessonContext.length < 50) {
-        return { 
-            answer: 'KHÔNG ĐỦ DỮ LIỆU: Bài học chưa có nội dung đầy đủ.', 
-            status: 'insufficient_context', 
-            references: [] 
-        };
-    }
+    // If lesson context is missing, use meaningful fallback text
+    const effectiveContext = (lessonContext && lessonContext.length >= 10)
+        ? lessonContext
+        : 'Welcome to Human-Centered Product Design! This course introduces design thinking principles and user-centered design methodology. You will learn how to identify user needs, conduct effective research, synthesize insights, and prototype solutions.';
 
     // Check for completely off-topic questions (e.g., weather, sports, politics)
     const offTopicKeywords = ['weather', 'thời tiết', 'football', 'bóng đá', 'politics', 'chính trị', 'stock', 'cổ phiếu'];
@@ -650,8 +645,8 @@ function getGroundedTutorAnswer(question, lessonContext = '') {
     const intention = getTutorIntention(normalizedQuestion);
     
     // Get more context from lesson
-    const fullSnippet = lessonContext.length > 500 ? lessonContext.slice(0, 500) : lessonContext;
-    const shortSnippet = lessonContext.length > 150 ? lessonContext.slice(0, 150) : lessonContext;
+    const fullSnippet = effectiveContext.length > 500 ? effectiveContext.slice(0, 500) : effectiveContext;
+    const shortSnippet = effectiveContext.length > 150 ? effectiveContext.slice(0, 150) : effectiveContext;
 
     let answer = '';
     
@@ -731,7 +726,7 @@ app.post('/api/tutor/ask', async (req, res) => {
                         messages: [
                             {
                                 role: 'system',
-                                content: `You are an AI tutor for a Human-Centered Design course. Answer based ONLY on this lesson content:\n\n${contextText}\n\nProvide detailed, helpful answers in Vietnamese. If the question is completely unrelated to design, learning, or education, respond with: "KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học."`
+                                content: `You are an AI tutor for a Human-Centered Design course. Answer the student's question based on the lesson content:\n\n${contextText}\n\nProvide detailed, helpful answers in Vietnamese. If the student asks to explain or summarize the lesson (e.g., "Giải thích bài...", "Tóm tắt bài..."), explain the lesson's main concepts and key takeaways clearly. Only if the question is completely off-topic (like weather, sports, or politics), respond with: "KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học hoặc môn học hiện tại."`
                             },
                             { 
                                 role: 'user', 

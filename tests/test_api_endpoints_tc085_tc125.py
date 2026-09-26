@@ -100,6 +100,8 @@ def test_tc_107_get_admin_users_roster(api_base_url):
 def test_tc_108_put_admin_users_role_update(api_base_url):
     res = requests.patch(f"{api_base_url}/api/admin/users/1/role", headers={"x-user-role": "Admin"}, json={"role": "Instructor"})
     assert res.status_code in [200, 404]
+    # Restore User 1 (Alice) role back to Learner
+    requests.patch(f"{api_base_url}/api/admin/users/1/role", headers={"x-user-role": "Admin"}, json={"role": "Learner"})
 
 def test_tc_109_post_admin_users_create(api_base_url):
     res = requests.post(f"{api_base_url}/api/admin/users", headers={"x-user-role": "Admin"}, json={"name": "New User", "email": "newuser@lms.test", "role": "Learner", "password": "123"})

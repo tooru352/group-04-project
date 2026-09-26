@@ -57,6 +57,8 @@ def test_tc_005_get_full_users_roster_for_admin(api_base_url):
 def test_tc_006_admin_promotes_learner_to_instructor(api_base_url):
     res = requests.patch(f"{api_base_url}/api/admin/users/1/role", headers={"x-user-role": "Admin"}, json={"role": "Instructor"})
     assert res.status_code in [200, 404]
+    # Restore User 1 (Alice) back to Learner
+    requests.patch(f"{api_base_url}/api/admin/users/1/role", headers={"x-user-role": "Admin"}, json={"role": "Learner"})
 
 def test_tc_007_non_admin_user_role_update_attempt(api_base_url):
     res = requests.patch(f"{api_base_url}/api/admin/users/1/role", headers={"x-user-role": "Learner"}, json={"role": "Instructor"})
