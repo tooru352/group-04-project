@@ -12,7 +12,7 @@
     "lint": "node -e \"console.log('Lint: not configured for this repo yet; task-level validation is performed via typecheck + tests.');\"",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "node --test --experimental-strip-types \"src/**/*.test.ts\"",
-    "build": "node -e \"console.log('Build: no app bundler configured in this repo yet; task evidence uses typecheck + tests.');\"",
+    "build": "npm --prefix web install && npm --prefix web run build",
     "api": "node server/index.js",
     "dev": "concurrently \"npm run api\" \"npm --prefix web run dev -- --host 0.0.0.0\""
   },

@@ -6,7 +6,7 @@ import InstructorModuleView from './app/instructor/InstructorModuleView.jsx'
 import ReviewerModuleView from './app/reviewer/ReviewerModuleView.jsx'
 
 // FIX BUG-03: Replaced window.location.reload() with persistent localStorage session & smooth React State updates (Do Thi Kim Yen)
-const API_BASE = 'http://localhost:4000'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000'
 
 const roleConfig = [
   {
