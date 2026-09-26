@@ -26,30 +26,6 @@ export default function AiTutorChatBox({
         { text: '📝 Tóm tắt ý chính của bài học', intent: 'explain' },
       ]
 
-  // Strategy 1: Try Puter.js (free AI, no API key required - User-Pays model)
-  const askViaPuter = async (questionText, lessonContext) => {
-    const puter = window.puter
-    if (!puter?.ai?.chat) throw new Error('Puter not available')
-
-    const systemPrompt = `Bạn là AI Tutor thân thiện cho khóa học "Human-Centered Product Design".
-Trả lời bằng tiếng Việt, rõ ràng và chi tiết.
-Nội dung bài học: ${lessonContext || 'Human-Centered Product Design - Design thinking, empathy, user research, prototyping, design systems.'}
-Luôn trả lời các câu hỏi về học tập và thiết kế. Chỉ từ chối câu hỏi hoàn toàn không liên quan giáo dục.`
-
-    const response = await puter.ai.chat(
-      `${systemPrompt}\n\nCâu hỏi: ${questionText}`,
-      { model: 'gpt-4o-mini' }
-    )
-
-    const text = response?.message?.content?.[0]?.text
-      || response?.message?.content
-      || response?.text
-      || (typeof response === 'string' ? response : null)
-
-    if (!text) throw new Error('Empty response from Puter')
-    return text
-  }
-
   const handleAsk = async (customPrompt, customIntent) => {
     const questionText = (customPrompt || prompt).trim()
     if (!questionText) return
@@ -72,18 +48,7 @@ Luôn trả lời các câu hỏi về học tập và thiết kế. Chỉ từ 
         }
       }
 
-      // === Strategy 1: Puter.js (free AI, no API key) ===
-      try {
-        const puterAnswer = await askViaPuter(questionText, contextTitle)
-        setAnswer({ ok: true, answer: puterAnswer, source: 'puter', status: 'success', references: [], intent: detectedIntent })
-        if (!customPrompt) setPrompt('')
-        return
-      } catch (puterErr) {
-        // Puter unavailable or user not signed into Puter → fallback
-        console.info('Puter AI unavailable, using backend:', puterErr.message)
-      }
-
-      // === Strategy 2: Backend API (local tutor / OpenAI) ===
+      // Backend API (local tutor / OpenAI)
       const res = await fetch(`${API_BASE}/api/tutor/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
