@@ -702,6 +702,57 @@ app.post('/api/tutor/ask', async (req, res) => {
 
         const lesson = lessonResult.rows[0] || (await query('SELECT id, title, content, course_id FROM lessons ORDER BY id LIMIT 1;')).rows[0];
         const contextText = lesson?.content || 'Empathy and user needs are central to design decisions. Journey mapping connects user pain points to actions and prototypes.';
+        
+        // Try OpenAI first if API key exists
+        if (process.env.OPENAI_API_KEY) {
+            try {
+                const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-4o-mini',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: `You are an AI tutor for a Human-Centered Design course. Answer based ONLY on this lesson content:\n\n${contextText}\n\nIf the question is not related to the lesson, respond with: "KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học."`
+                            },
+                            { 
+                                role: 'user', 
+                                content: intent === 'example' ? `${normalizedQuestion}. Provide concrete, specific examples.` : normalizedQuestion 
+                            }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 500,
+                    }),
+                });
+
+                if (aiResponse.ok) {
+                    const data = await aiResponse.json();
+                    const answer = data.choices?.[0]?.message?.content?.trim();
+
+                    if (answer) {
+                        return res.json({
+                            ok: true,
+                            answer,
+                            source: 'openai',
+                            status: 'success',
+                            references: [{ lessonId: requestedLessonId, snippet: contextText.slice(0, 200) }],
+                            lessonId: requestedLessonId,
+                            intent: intent || getTutorIntention(normalizedQuestion),
+                            sessionId: sessionId || requestedLearnerId,
+                        });
+                    }
+                }
+            } catch (openaiError) {
+                console.error('OpenAI error, falling back to local:', openaiError.message);
+                // Fall through to local tutor
+            }
+        }
+        
+        // Fallback to local grounded tutor
         const groundedResult = getGroundedTutorAnswer(normalizedQuestion, contextText);
 
         if (groundedResult.status !== 'success') {
