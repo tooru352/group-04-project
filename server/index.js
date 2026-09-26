@@ -621,19 +621,25 @@ function getGroundedTutorAnswer(question, lessonContext = '') {
         return { answer: 'Please enter a question so I can help you.', status: 'invalid_input', references: [] };
     }
 
-    // Must have relevant keywords in question OR lesson content
-    // For generic questions like "Giải thích bài học", accept if lesson has content
-    const hasKeywordInPrompt = relevantKeywords.some((keyword) => normalizedPrompt.includes(keyword));
-    const hasKeywordInContext = relevantKeywords.some((keyword) => normalizedContext.includes(keyword));
-    
-    // Generic learning keywords that indicate educational intent
-    const learningKeywords = ['giải thích', 'explain', 'tóm tắt', 'ví dụ', 'example', 'bài học', 'lesson', 'học', 'learn', 'hướng dẫn', 'guide'];
-    const hasLearningIntent = learningKeywords.some((keyword) => normalizedPrompt.includes(keyword));
+    if (!normalizedQuestion) {
+        return { answer: 'Please enter a question so I can help you.', status: 'invalid_input', references: [] };
+    }
 
-    // Reject if:
-    // 1. No keywords in prompt AND no learning intent
-    // 2. OR no keywords in lesson content (off-topic lesson)
-    if ((!hasKeywordInPrompt && !hasLearningIntent) || !hasKeywordInContext) {
+    // If lesson has meaningful content, accept the question
+    // Only reject if lesson content is too short (likely fallback/empty)
+    if (lessonContext.length < 50) {
+        return { 
+            answer: 'KHÔNG ĐỦ DỮ LIỆU: Bài học chưa có nội dung đầy đủ.', 
+            status: 'insufficient_context', 
+            references: [] 
+        };
+    }
+
+    // Check for completely off-topic questions (e.g., weather, sports, politics)
+    const offTopicKeywords = ['weather', 'thời tiết', 'football', 'bóng đá', 'politics', 'chính trị', 'stock', 'cổ phiếu'];
+    const isOffTopic = offTopicKeywords.some((keyword) => normalizedPrompt.includes(keyword));
+    
+    if (isOffTopic) {
         return { 
             answer: 'KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học hoặc môn học hiện tại.', 
             status: 'insufficient_context', 
