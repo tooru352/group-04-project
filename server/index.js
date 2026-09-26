@@ -621,11 +621,19 @@ function getGroundedTutorAnswer(question, lessonContext = '') {
         return { answer: 'Please enter a question so I can help you.', status: 'invalid_input', references: [] };
     }
 
-    // Must have relevant keywords in BOTH question AND lesson content
+    // Must have relevant keywords in question OR lesson content
+    // For generic questions like "Giải thích bài học", accept if lesson has content
     const hasKeywordInPrompt = relevantKeywords.some((keyword) => normalizedPrompt.includes(keyword));
     const hasKeywordInContext = relevantKeywords.some((keyword) => normalizedContext.includes(keyword));
+    
+    // Generic learning keywords that indicate educational intent
+    const learningKeywords = ['giải thích', 'explain', 'tóm tắt', 'ví dụ', 'example', 'bài học', 'lesson', 'học', 'learn', 'hướng dẫn', 'guide'];
+    const hasLearningIntent = learningKeywords.some((keyword) => normalizedPrompt.includes(keyword));
 
-    if (!hasKeywordInPrompt || !hasKeywordInContext) {
+    // Reject if:
+    // 1. No keywords in prompt AND no learning intent
+    // 2. OR no keywords in lesson content (off-topic lesson)
+    if ((!hasKeywordInPrompt && !hasLearningIntent) || !hasKeywordInContext) {
         return { 
             answer: 'KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học hoặc môn học hiện tại.', 
             status: 'insufficient_context', 
@@ -703,7 +711,7 @@ app.post('/api/tutor/ask', async (req, res) => {
         const lesson = lessonResult.rows[0] || (await query('SELECT id, title, content, course_id FROM lessons ORDER BY id LIMIT 1;')).rows[0];
         const contextText = lesson?.content || 'Empathy and user needs are central to design decisions. Journey mapping connects user pain points to actions and prototypes.';
         
-        // Try OpenAI first if API key exists
+        // Try OpenAI first if API key exists - OpenAI will handle all questions
         if (process.env.OPENAI_API_KEY) {
             try {
                 const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -717,15 +725,15 @@ app.post('/api/tutor/ask', async (req, res) => {
                         messages: [
                             {
                                 role: 'system',
-                                content: `You are an AI tutor for a Human-Centered Design course. Answer based ONLY on this lesson content:\n\n${contextText}\n\nIf the question is not related to the lesson, respond with: "KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học."`
+                                content: `You are an AI tutor for a Human-Centered Design course. Answer based ONLY on this lesson content:\n\n${contextText}\n\nProvide detailed, helpful answers in Vietnamese. If the question is completely unrelated to design, learning, or education, respond with: "KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học."`
                             },
                             { 
                                 role: 'user', 
-                                content: intent === 'example' ? `${normalizedQuestion}. Provide concrete, specific examples.` : normalizedQuestion 
+                                content: intent === 'example' ? `${normalizedQuestion}. Hãy cho ví dụ cụ thể và chi tiết.` : normalizedQuestion 
                             }
                         ],
                         temperature: 0.7,
-                        max_tokens: 500,
+                        max_tokens: 600,
                     }),
                 });
 
@@ -745,6 +753,9 @@ app.post('/api/tutor/ask', async (req, res) => {
                             sessionId: sessionId || requestedLearnerId,
                         });
                     }
+                } else {
+                    const errorData = await aiResponse.json();
+                    console.error('OpenAI API error:', errorData);
                 }
             } catch (openaiError) {
                 console.error('OpenAI error, falling back to local:', openaiError.message);
@@ -752,7 +763,7 @@ app.post('/api/tutor/ask', async (req, res) => {
             }
         }
         
-        // Fallback to local grounded tutor
+        // Fallback to local grounded tutor if OpenAI not available
         const groundedResult = getGroundedTutorAnswer(normalizedQuestion, contextText);
 
         if (groundedResult.status !== 'success') {
