@@ -726,7 +726,7 @@ app.post('/api/tutor/ask', async (req, res) => {
                         messages: [
                             {
                                 role: 'system',
-                                content: `You are an AI tutor for a Human-Centered Design course. Answer the student's question based on the lesson content:\n\n${contextText}\n\nProvide detailed, helpful answers in Vietnamese. If the student asks to explain or summarize the lesson (e.g., "Giải thích bài...", "Tóm tắt bài..."), explain the lesson's main concepts and key takeaways clearly. Only if the question is completely off-topic (like weather, sports, or politics), respond with: "KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học hoặc môn học hiện tại."`
+                                content: `You are an encouraging AI tutor for the course "Human-Centered Product Design". Always provide helpful, structured, detailed answers in Vietnamese based on the provided lesson content below.\n\nLesson Title: ${lesson?.title || 'Bài học'}\nLesson Content:\n${contextText}\n\nGuidelines:\n- If the student asks to explain, summarize, or give examples (e.g., "Tóm tắt bài học", "Cho tôi ví dụ", "Giải thích bài..."), explain the lesson concepts clearly with key takeaways and bullet points.\n- Use clear, friendly Vietnamese markdown.\n- Only if the question is completely unrelated to education, learning, or design (such as asking about weather, sports, or politics), reply with: "KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học hoặc môn học hiện tại."`
                             },
                             { 
                                 role: 'user', 
@@ -743,12 +743,13 @@ app.post('/api/tutor/ask', async (req, res) => {
                     const answer = data.choices?.[0]?.message?.content?.trim();
 
                     if (answer) {
+                        const isInsufficient = answer.includes('KHÔNG ĐỦ DỮ LIỆU');
                         return res.json({
                             ok: true,
                             answer,
                             source: 'openai',
-                            status: 'success',
-                            references: [{ lessonId: requestedLessonId, snippet: contextText.slice(0, 200) }],
+                            status: isInsufficient ? 'insufficient_context' : 'success',
+                            references: isInsufficient ? [] : [{ lessonId: requestedLessonId, snippet: contextText.slice(0, 200) }],
                             lessonId: requestedLessonId,
                             intent: intent || getTutorIntention(normalizedQuestion),
                             sessionId: sessionId || requestedLearnerId,
