@@ -634,34 +634,43 @@ function getGroundedTutorAnswer(question, lessonContext = '') {
     }
 
     const intention = getTutorIntention(normalizedQuestion);
-    const snippet = lessonContext.length > 200 ? lessonContext.slice(0, 200) : lessonContext;
+    
+    // Get more context from lesson
+    const fullSnippet = lessonContext.length > 500 ? lessonContext.slice(0, 500) : lessonContext;
+    const shortSnippet = lessonContext.length > 150 ? lessonContext.slice(0, 150) : lessonContext;
 
     let answer = '';
+    
     if (intention === 'example') {
-        // Extract concrete examples from lesson content
+        // Generate concrete examples based on lesson content
         if (normalizedContext.includes('prototype') || normalizedContext.includes('prototyping')) {
-            answer = `Ví dụ cụ thể về prototyping từ bài học: Bạn có thể dùng paper prototypes (vẽ tay trên giấy) để test ý tưởng nhanh, wireframes trong Figma cho prototype trung bình, hoặc tạo interactive HTML mockups để test với người dùng thật. Mỗi loại prototype phục vụ mục đích khác nhau: paper cho brainstorming, wireframe cho layout, interactive cho user testing.`;
+            answer = `Ví dụ cụ thể về prototyping từ bài học:\n\n• Paper prototypes (vẽ tay trên giấy): Test ý tưởng nhanh trong 5-10 phút, phù hợp cho brainstorming ban đầu\n• Wireframes trong Figma: Prototype trung bình để thể hiện layout và structure, giúp team align về UI\n• Interactive HTML mockups: High-fidelity prototype để test với người dùng thật, đo lường behavior thực tế\n\nMỗi loại prototype phục vụ mục đích khác nhau và được dùng ở các giai đoạn khác nhau của design process.`;
         } else if (normalizedContext.includes('research') || normalizedContext.includes('interview')) {
-            answer = `Ví dụ cụ thể về user research: Trong interviews, bạn hỏi "Kể về lần gần nhất bạn gặp vấn đề với [sản phẩm]?" thay vì "Bạn có thích sản phẩm không?". Dùng empathy map để tổng hợp: user nói gì, nghĩ gì, làm gì, cảm thấy gì. Journey map thể hiện từng bước người dùng thực hiện và đánh dấu pain points.`;
+            answer = `Ví dụ cụ thể về user research methods:\n\n1. Interviews: Hỏi "Kể về lần gần nhất bạn gặp vấn đề với [sản phẩm]?" thay vì "Bạn có thích sản phẩm không?" (open-ended question)\n\n2. Empathy Map: Tổng hợp dữ liệu theo 4 quadrants\n   • Says: "Tôi muốn tìm nhanh"\n   • Thinks: "App này chậm quá"\n   • Does: Scroll liên tục, click nhiều nút\n   • Feels: Frustrated, mất kiên nhẫn\n\n3. Journey Map: Map từng bước user thực hiện, identify pain points (e.g., "Bước 3: Login - User phải nhập quá nhiều thông tin → Frustration level cao")`;
         } else if (normalizedContext.includes('design system') || normalizedContext.includes('component')) {
-            answer = `Ví dụ về design system: Tạo button component với các variants (primary, secondary, disabled), định nghĩa design tokens (colors, spacing, typography), viết guidelines về khi nào dùng variant nào. Material Design và Apple Human Interface Guidelines là ví dụ về design systems lớn.`;
+            answer = `Ví dụ về design system:\n\n• Component: Button với variants\n  - Primary: bg-blue, text-white (CTA chính)\n  - Secondary: border-blue, text-blue (action phụ)\n  - Disabled: bg-gray, không clickable\n\n• Design Tokens:\n  - color-primary: #2563eb\n  - spacing-base: 8px (4, 8, 16, 24, 32...)\n  - font-size-body: 16px\n\n• Guidelines: "Dùng Primary button cho 1 CTA chính mỗi screen, Secondary cho các actions khác"\n\nVí dụ thực tế: Material Design (Google), Human Interface Guidelines (Apple)`;
         } else {
-            answer = `Ví dụ từ bài học: ${snippet}. Áp dụng vào thực tế bằng cách bắt đầu với user research, xác định pain points, tạo prototype để test giả thuyết, và iterate dựa trên feedback thực tế.`;
+            answer = `Ví dụ áp dụng từ bài học:\n\n${fullSnippet}\n\n➡️ Cách áp dụng vào thực tế:\n1. Bắt đầu với user research để identify real needs\n2. Synthesize insights thành pain points cụ thể\n3. Tạo prototype để test giả thuyết\n4. Iterate dựa trên feedback từ user testing\n\nKey principle: Base decisions on evidence, not assumptions.`;
         }
     } else {
-        // Explain mode
-        answer = `Dựa trên nội dung bài học: "${snippet}". Trọng tâm là: ${
-            normalizedContext.includes('research') ? 'phương pháp nghiên cứu người dùng thực tế, empathy mapping, và journey mapping để hiểu nhu cầu thật' :
-            normalizedContext.includes('prototype') ? 'tạo prototype phù hợp (paper, wireframe, interactive) để test giả thuyết và iterate dựa trên feedback' :
-            normalizedContext.includes('design system') ? 'xây dựng component library, design tokens, và guidelines để đảm bảo consistency' :
-            'áp dụng design thinking, empathy với người dùng, và decision dựa trên evidence'
-        }.`;
+        // Explain mode - extract key concepts and explain them
+        answer = `${fullSnippet}\n\n`;
+        
+        if (normalizedContext.includes('research') && normalizedContext.includes('interview')) {
+            answer += `\n📌 Trọng tâm: Phương pháp nghiên cứu người dùng\n• Qualitative methods: Interviews, observations, contextual inquiry\n• Tools: Empathy mapping, journey mapping\n• Principle: Grounded in real user data, không dựa vào assumptions\n• Goal: Identify pain points và user needs thực tế`;
+        } else if (normalizedContext.includes('prototype') && (normalizedContext.includes('low-fidelity') || normalizedContext.includes('high-fidelity'))) {
+            answer += `\n📌 Trọng tâm: Prototyping strategies\n• Low-fidelity: Sketching, paper prototypes → Nhanh, phù hợp early stage\n• High-fidelity: Figma, interactive prototypes → Chi tiết, phù hợp user testing\n• Testing approach: Test specific hypotheses, fail fast, iterate\n• Tools mentioned: Figma, paper, HTML mockups`;
+        } else if (normalizedContext.includes('design system') || normalizedContext.includes('atomic')) {
+            answer += `\n📌 Trọng tâm: Design system principles\n• Component libraries: Reusable UI elements\n• Design tokens: Variables cho colors, spacing, typography\n• Atomic design: Methodology để build scalable systems\n• Benefits: Consistency, reduced decision fatigue, improved team velocity`;
+        } else {
+            answer += `\n📌 Trọng tâm:\n• Design thinking và user-centered approach\n• Evidence-based decision making\n• Iteration và continuous improvement\n• Empathy với người dùng`;
+        }
     }
 
     return {
         answer,
         status: 'success',
-        references: [{ lessonId: 'lesson-1', snippet }],
+        references: [{ lessonId: 'lesson-1', snippet: shortSnippet }],
     };
 }
 
