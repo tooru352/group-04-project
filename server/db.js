@@ -193,7 +193,7 @@ export async function initializeDatabase() {
     if (courseOneId) {
         await query(
             `INSERT INTO lessons (course_id, title, content, duration, is_required, sort_order, status)
-             SELECT $1, 'Intro', 'Course introduction and outcomes.', 25, TRUE, 1, 'Published'
+             SELECT $1, 'Intro', 'Welcome to Human-Centered Product Design! This course introduces design thinking principles and user-centered design methodology. You will learn how to identify user needs, conduct effective research, synthesize insights, and prototype solutions that solve real problems. Throughout this course, we focus on empathy, iteration, and evidence-based decision making.', 25, TRUE, 1, 'Published'
              WHERE NOT EXISTS (
                  SELECT 1 FROM lessons WHERE course_id = $1 AND title = 'Intro' LIMIT 1
              );`,
@@ -202,7 +202,7 @@ export async function initializeDatabase() {
 
         await query(
             `INSERT INTO lessons (course_id, title, content, duration, is_required, sort_order, status)
-             SELECT $1, 'Research', 'User research methods and synthesis.', 30, TRUE, 2, 'Published'
+             SELECT $1, 'Research', 'User research is the foundation of human-centered design. In this lesson, you will learn qualitative research methods including interviews, observations, and contextual inquiry. We cover how to design research questions, recruit participants, conduct ethical research, and synthesize findings into actionable insights. Key concepts include empathy mapping, journey mapping, and identifying pain points. Research must be grounded in real user data, not assumptions. Always validate your hypotheses with evidence from actual users.', 30, TRUE, 2, 'Published'
              WHERE NOT EXISTS (
                  SELECT 1 FROM lessons WHERE course_id = $1 AND title = 'Research' LIMIT 1
              );`,
@@ -210,8 +210,26 @@ export async function initializeDatabase() {
         );
 
         await query(
+            `INSERT INTO lessons (course_id, title, content, duration, is_required, sort_order, status)
+             SELECT $1, 'Prototyping', 'Prototyping transforms ideas into tangible artifacts for testing. This lesson covers low-fidelity sketching, wireframing, and high-fidelity interactive prototypes. Learn when to use each prototype type, how to test with users, and iterate based on feedback. Prototypes should focus on testing specific hypotheses about user behavior and product assumptions. Remember: fail fast, learn quickly, and iterate based on evidence. Use tools like Figma, paper prototypes, or simple HTML mockups depending on your testing goals.', 35, TRUE, 3, 'Published'
+             WHERE NOT EXISTS (
+                 SELECT 1 FROM lessons WHERE course_id = $1 AND title = 'Prototyping' LIMIT 1
+             );`,
+            [courseOneId],
+        );
+
+        await query(
+            `INSERT INTO lessons (course_id, title, content, duration, is_required, sort_order, status)
+             SELECT $1, 'Design Systems', 'A design system is a collection of reusable components, patterns, and guidelines that ensure consistency across products. This lesson introduces core principles: component libraries, design tokens, accessibility standards, and documentation. Learn how to build scalable design systems that support multiple teams and products. Key topics include atomic design methodology, design-development handoff, and version control for design assets. A good design system reduces decision fatigue and improves team velocity.', 40, TRUE, 4, 'Published'
+             WHERE NOT EXISTS (
+                 SELECT 1 FROM lessons WHERE course_id = $1 AND title = 'Design Systems' LIMIT 1
+             );`,
+            [courseOneId],
+        );
+
+        await query(
             `INSERT INTO assignments (course_id, title, description, deadline, max_attempts, status)
-             SELECT $1, 'Design Reflection', 'Submit a short reflection on user research and design choices.', NOW() + INTERVAL '7 days', 2, 'Published'
+             SELECT $1, 'Design Reflection', 'Submit a 500-word reflection on user research and design choices. Address the following: (1) What research methods did you use and why? (2) What user needs did you identify? (3) How did user feedback influence your design decisions? (4) What prototype iterations did you create and what did you learn from testing? Support your answers with specific examples from your research data. Focus on evidence-based reasoning rather than personal opinions.', NOW() + INTERVAL '7 days', 2, 'Published'
              WHERE NOT EXISTS (
                  SELECT 1 FROM assignments WHERE course_id = $1 AND title = 'Design Reflection' LIMIT 1
              );`,
