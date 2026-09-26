@@ -572,11 +572,30 @@ function buildTutorReply(question, context = {}) {
 function getTutorIntention(question = '') {
     const value = String(question).toLowerCase();
 
-    if (value.includes('example') || value.includes('for example') || value.includes('illustrate')) {
+    // Vietnamese example keywords
+    if (
+        value.includes('example') || value.includes('for example') || value.includes('illustrate') ||
+        value.includes('ví dụ') || value.includes('minh họa') || value.includes('cho ví dụ') ||
+        value.includes('举例') || value.includes('cụ thể')
+    ) {
         return 'example';
     }
 
-    if (value.includes('explain') || value.includes('why') || value.includes('what is') || value.includes('how does')) {
+    // Vietnamese summarize keywords
+    if (
+        value.includes('tóm tắt') || value.includes('tóm lại') || value.includes('tổng kết') ||
+        value.includes('summarize') || value.includes('summary') || value.includes('overview')
+    ) {
+        return 'summarize';
+    }
+
+    // Vietnamese explain/ask keywords
+    if (
+        value.includes('explain') || value.includes('why') || value.includes('what is') || value.includes('how does') ||
+        value.includes('giải thích') || value.includes('tại sao') || value.includes('là gì') ||
+        value.includes('như thế nào') || value.includes('thế nào') || value.includes('cách') ||
+        value.includes('hỏi') || value.includes('bài học') || value.includes('khái niệm')
+    ) {
         return 'explain';
     }
 
@@ -588,69 +607,38 @@ function getGroundedTutorAnswer(question, lessonContext = '') {
     const normalizedContext = String(lessonContext || '').toLowerCase();
     const normalizedPrompt = normalizedQuestion.toLowerCase();
 
-    const relevantKeywords = [
-        'empathy',
-        'user need',
-        'journey mapping',
-        'prototype',
-        'prototyping',
-        'insight',
-        'research',
-        'design thinking',
-        'design system',
-        'component',
-        'wireframe',
-        'sketch',
-        'figma',
-        'atomic design',
-        'systems',
-        'feedback loop',
-        'decision',
-        'data',
-        'metrics',
-        'lesson',
-        'course',
-        'assignment',
-        'interview',
-        'observation',
-        'user',
-        'accessibility',
-    ];
-
     if (!normalizedQuestion) {
-        return { answer: 'Please enter a question so I can help you.', status: 'invalid_input', references: [] };
+        return { answer: 'Vui lòng nhập câu hỏi để AI Tutor có thể hỗ trợ bạn.', status: 'invalid_input', references: [] };
     }
 
-    if (!normalizedQuestion) {
-        return { answer: 'Please enter a question so I can help you.', status: 'invalid_input', references: [] };
-    }
-
-    // If lesson context is missing, use meaningful fallback text
-    const effectiveContext = (lessonContext && lessonContext.length >= 10)
-        ? lessonContext
-        : 'Welcome to Human-Centered Product Design! This course introduces design thinking principles and user-centered design methodology. You will learn how to identify user needs, conduct effective research, synthesize insights, and prototype solutions.';
-
-    // Check for completely off-topic questions (e.g., weather, sports, politics)
-    const offTopicKeywords = ['weather', 'thời tiết', 'football', 'bóng đá', 'politics', 'chính trị', 'stock', 'cổ phiếu'];
+    // Only block truly off-topic questions (weather, sports, politics - not education-related)
+    const offTopicKeywords = ['weather', 'thời tiết', 'football', 'bóng đá', 'politics', 'chính trị', 'stock market', 'cổ phiếu', 'crypto', 'bitcoin'];
     const isOffTopic = offTopicKeywords.some((keyword) => normalizedPrompt.includes(keyword));
     
     if (isOffTopic) {
         return { 
-            answer: 'KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học hoặc môn học hiện tại.', 
+            answer: 'Câu hỏi này nằm ngoài phạm vi bài học. AI Tutor chỉ hỗ trợ các câu hỏi liên quan đến nội dung môn học Human-Centered Product Design.', 
             status: 'insufficient_context', 
             references: [] 
         };
     }
 
+    // If lesson context is missing, use meaningful fallback text
+    const effectiveContext = (lessonContext && lessonContext.length >= 10)
+        ? lessonContext
+        : 'Welcome to Human-Centered Product Design! This course introduces design thinking principles and user-centered design methodology. You will learn how to identify user needs, conduct effective research, synthesize insights, and prototype solutions. Key topics include empathy mapping, journey mapping, prototyping, user interviews, and design systems.';
+
     const intention = getTutorIntention(normalizedQuestion);
     
     // Get more context from lesson
-    const fullSnippet = effectiveContext.length > 500 ? effectiveContext.slice(0, 500) : effectiveContext;
-    const shortSnippet = effectiveContext.length > 150 ? effectiveContext.slice(0, 150) : effectiveContext;
+    const fullSnippet = effectiveContext.length > 600 ? effectiveContext.slice(0, 600) : effectiveContext;
+    const shortSnippet = effectiveContext.length > 200 ? effectiveContext.slice(0, 200) : effectiveContext;
 
     let answer = '';
     
-    if (intention === 'example') {
+    if (intention === 'summarize') {
+        answer = `📋 **Tóm tắt bài học:**\n\n${fullSnippet}\n\n✅ **Điểm cốt lõi cần ghi nhớ:**\n• Luôn đặt người dùng vào trung tâm của quá trình thiết kế\n• Dựa vào dữ liệu thực tế, không phải giả định\n• Iteration (lặp lại cải tiến) là chìa khóa thành công\n• Empathy với người dùng giúp tạo ra sản phẩm thực sự có giá trị`;
+    } else if (intention === 'example') {
         // Generate concrete examples based on lesson content
         if (normalizedContext.includes('prototype') || normalizedContext.includes('prototyping')) {
             answer = `Ví dụ cụ thể về prototyping từ bài học:\n\n• Paper prototypes (vẽ tay trên giấy): Test ý tưởng nhanh trong 5-10 phút, phù hợp cho brainstorming ban đầu\n• Wireframes trong Figma: Prototype trung bình để thể hiện layout và structure, giúp team align về UI\n• Interactive HTML mockups: High-fidelity prototype để test với người dùng thật, đo lường behavior thực tế\n\nMỗi loại prototype phục vụ mục đích khác nhau và được dùng ở các giai đoạn khác nhau của design process.`;
@@ -659,20 +647,19 @@ function getGroundedTutorAnswer(question, lessonContext = '') {
         } else if (normalizedContext.includes('design system') || normalizedContext.includes('component')) {
             answer = `Ví dụ về design system:\n\n• Component: Button với variants\n  - Primary: bg-blue, text-white (CTA chính)\n  - Secondary: border-blue, text-blue (action phụ)\n  - Disabled: bg-gray, không clickable\n\n• Design Tokens:\n  - color-primary: #2563eb\n  - spacing-base: 8px (4, 8, 16, 24, 32...)\n  - font-size-body: 16px\n\n• Guidelines: "Dùng Primary button cho 1 CTA chính mỗi screen, Secondary cho các actions khác"\n\nVí dụ thực tế: Material Design (Google), Human Interface Guidelines (Apple)`;
         } else {
-            answer = `Ví dụ áp dụng từ bài học:\n\n${fullSnippet}\n\n➡️ Cách áp dụng vào thực tế:\n1. Bắt đầu với user research để identify real needs\n2. Synthesize insights thành pain points cụ thể\n3. Tạo prototype để test giả thuyết\n4. Iterate dựa trên feedback từ user testing\n\nKey principle: Base decisions on evidence, not assumptions.`;
+            answer = `🎯 Ví dụ áp dụng từ bài học:\n\n${fullSnippet}\n\n➡️ **Cách áp dụng vào thực tế:**\n1. Bắt đầu với user research để identify real needs\n2. Synthesize insights thành pain points cụ thể\n3. Tạo prototype để test giả thuyết\n4. Iterate dựa trên feedback từ user testing\n\nKey principle: Base decisions on evidence, not assumptions.`;
         }
     } else {
-        // Explain mode - extract key concepts and explain them
-        answer = `${fullSnippet}\n\n`;
-        
-        if (normalizedContext.includes('research') && normalizedContext.includes('interview')) {
-            answer += `\n📌 Trọng tâm: Phương pháp nghiên cứu người dùng\n• Qualitative methods: Interviews, observations, contextual inquiry\n• Tools: Empathy mapping, journey mapping\n• Principle: Grounded in real user data, không dựa vào assumptions\n• Goal: Identify pain points và user needs thực tế`;
-        } else if (normalizedContext.includes('prototype') && (normalizedContext.includes('low-fidelity') || normalizedContext.includes('high-fidelity'))) {
-            answer += `\n📌 Trọng tâm: Prototyping strategies\n• Low-fidelity: Sketching, paper prototypes → Nhanh, phù hợp early stage\n• High-fidelity: Figma, interactive prototypes → Chi tiết, phù hợp user testing\n• Testing approach: Test specific hypotheses, fail fast, iterate\n• Tools mentioned: Figma, paper, HTML mockups`;
-        } else if (normalizedContext.includes('design system') || normalizedContext.includes('atomic')) {
-            answer += `\n📌 Trọng tâm: Design system principles\n• Component libraries: Reusable UI elements\n• Design tokens: Variables cho colors, spacing, typography\n• Atomic design: Methodology để build scalable systems\n• Benefits: Consistency, reduced decision fatigue, improved team velocity`;
+        // Explain mode - extract key concepts and explain them from lesson context
+        if (normalizedContext.includes('research') && (normalizedContext.includes('interview') || normalizedContext.includes('empathy'))) {
+            answer = `📚 **Giải thích bài học: User Research**\n\n${fullSnippet}\n\n📌 **Trọng tâm chính:**\n• **Qualitative methods:** Interviews, observations, contextual inquiry\n• **Empathy Mapping:** Phân tích cảm xúc, suy nghĩ, hành vi người dùng\n• **Journey Mapping:** Vẽ bản đồ trải nghiệm người dùng từ đầu đến cuối\n• **Nguyên tắc:** Dựa trên dữ liệu thực tế từ người dùng, không phải giả định\n• **Mục tiêu:** Xác định pain points và nhu cầu thực sự của người dùng`;
+        } else if (normalizedContext.includes('prototype') || normalizedContext.includes('prototyping')) {
+            answer = `📚 **Giải thích bài học: Prototyping**\n\n${fullSnippet}\n\n📌 **Trọng tâm chính:**\n• **Low-fidelity:** Sketching, paper prototypes → Nhanh, phù hợp early stage\n• **High-fidelity:** Figma, interactive prototypes → Chi tiết, phù hợp user testing\n• **Testing approach:** Test specific hypotheses, fail fast, iterate\n• **Nguyên tắc:** Fail fast - học nhanh từ sai lầm và cải tiến liên tục\n• **Tools:** Figma, paper prototypes, HTML mockups`;
+        } else if (normalizedContext.includes('design system') || normalizedContext.includes('atomic') || normalizedContext.includes('component')) {
+            answer = `📚 **Giải thích bài học: Design Systems**\n\n${fullSnippet}\n\n📌 **Trọng tâm chính:**\n• **Component libraries:** Các UI element có thể tái sử dụng\n• **Design tokens:** Biến số cho colors, spacing, typography\n• **Atomic design:** Phương pháp xây dựng hệ thống thiết kế có thể mở rộng\n• **Lợi ích:** Nhất quán, giảm decision fatigue, tăng tốc độ làm việc của team`;
         } else {
-            answer += `\n📌 Trọng tâm:\n• Design thinking và user-centered approach\n• Evidence-based decision making\n• Iteration và continuous improvement\n• Empathy với người dùng`;
+            // General explain - always provide a helpful response based on lesson content
+            answer = `📚 **Nội dung bài học:**\n\n${fullSnippet}\n\n📌 **Điểm cốt lõi của môn học Human-Centered Product Design:**\n• **Design Thinking:** Quy trình sáng tạo lấy người dùng làm trung tâm\n• **Empathy:** Hiểu sâu sắc nhu cầu, cảm xúc và pain points của người dùng\n• **User Research:** Thu thập dữ liệu thực tế qua interviews, observations, surveys\n• **Prototyping:** Tạo ra mẫu nhanh để test ý tưởng với người dùng thật\n• **Iteration:** Cải tiến liên tục dựa trên phản hồi từ người dùng\n\n💡 **Nguyên tắc quan trọng nhất:** Mọi quyết định thiết kế phải dựa trên bằng chứng từ dữ liệu người dùng, không phải từ giả định cá nhân.`;
         }
     }
 
@@ -726,15 +713,15 @@ app.post('/api/tutor/ask', async (req, res) => {
                         messages: [
                             {
                                 role: 'system',
-                                content: `You are an encouraging AI tutor for the course "Human-Centered Product Design". Always provide helpful, structured, detailed answers in Vietnamese based on the provided lesson content below.\n\nLesson Title: ${lesson?.title || 'Bài học'}\nLesson Content:\n${contextText}\n\nGuidelines:\n- If the student asks to explain, summarize, or give examples (e.g., "Tóm tắt bài học", "Cho tôi ví dụ", "Giải thích bài..."), explain the lesson concepts clearly with key takeaways and bullet points.\n- Use clear, friendly Vietnamese markdown.\n- Only if the question is completely unrelated to education, learning, or design (such as asking about weather, sports, or politics), reply with: "KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học hoặc môn học hiện tại."`
+                                content: `Bạn là AI Tutor thân thiện và hỗ trợ học viên trong khóa học "Human-Centered Product Design". Luôn trả lời bằng tiếng Việt, có cấu trúc rõ ràng và chi tiết dựa trên nội dung bài học được cung cấp.\n\nTên bài học: ${lesson?.title || 'Bài học'}\nNội dung bài học:\n${contextText}\n\nHướng dẫn bắt buộc:\n- LUÔN trả lời mọi câu hỏi liên quan đến học tập, thiết kế, công nghệ, sản phẩm, kỹ năng, hoặc kiến thức tổng quát.\n- Nếu học viên hỏi giải thích, tóm tắt, ví dụ ("Tóm tắt bài học", "Cho tôi ví dụ", "Giải thích bài..."), hãy giải thích rõ ràng với bullet points.\n- Nếu câu hỏi không trực tiếp liên quan đến bài học nhưng vẫn là câu hỏi học thuật, hãy trả lời dựa trên kiến thức design và học tập.\n- CHỈ từ chối nếu câu hỏi hoàn toàn không liên quan đến giáo dục (thời tiết, thể thao giải trí, chính trị, tài chính cá nhân). Trong trường hợp đó ghi: "Câu hỏi nằm ngoài phạm vi môn học. Vui lòng hỏi về nội dung Human-Centered Product Design."\n- Dùng markdown tiếng Việt thân thiện.`
                             },
                             { 
                                 role: 'user', 
-                                content: intent === 'example' ? `${normalizedQuestion}. Hãy cho ví dụ cụ thể và chi tiết.` : normalizedQuestion 
+                                content: intent === 'example' ? `${normalizedQuestion}. Hãy cho ví dụ cụ thể và chi tiết từ thực tế.` : normalizedQuestion 
                             }
                         ],
                         temperature: 0.7,
-                        max_tokens: 600,
+                        max_tokens: 800,
                     }),
                 });
 
@@ -743,43 +730,46 @@ app.post('/api/tutor/ask', async (req, res) => {
                     const answer = data.choices?.[0]?.message?.content?.trim();
 
                     if (answer) {
-                        const isInsufficient = answer.includes('KHÔNG ĐỦ DỮ LIỆU');
-                        if (!isInsufficient) {
-                            return res.json({
-                                ok: true,
-                                answer,
-                                source: 'openai',
-                                status: 'success',
-                                references: [{ lessonId: requestedLessonId, snippet: contextText.slice(0, 200) }],
-                                lessonId: requestedLessonId,
-                                intent: intent || getTutorIntention(normalizedQuestion),
-                                sessionId: sessionId || requestedLearnerId,
-                            });
-                        }
-
-                        const offTopicKeywords = ['weather', 'thời tiết', 'football', 'bóng đá', 'politics', 'chính trị', 'stock', 'cổ phiếu'];
+                        // Check if OpenAI returned an off-topic rejection
+                        const offTopicKeywords = ['weather', 'thời tiết', 'football', 'bóng đá', 'politics', 'chính trị', 'stock market', 'cổ phiếu', 'crypto', 'bitcoin'];
                         const isActuallyOffTopic = offTopicKeywords.some((keyword) => normalizedQuestion.toLowerCase().includes(keyword));
+                        
+                        // OpenAI may sometimes over-reject valid Vietnamese questions
+                        // Only treat as insufficient if question is truly off-topic
+                        const isInsufficient = (answer.includes('KHÔNG ĐỦ DỮ LIỆU') || answer.includes('nằm ngoài phạm vi')) && isActuallyOffTopic;
 
-                        if (isActuallyOffTopic) {
+                        if (!isInsufficient) {
+                            // Return OpenAI answer (even if it contains rejection for off-topic)
                             return res.json({
                                 ok: true,
                                 answer,
                                 source: 'openai',
-                                status: 'insufficient_context',
-                                references: [],
+                                status: isActuallyOffTopic ? 'insufficient_context' : 'success',
+                                references: isActuallyOffTopic ? [] : [{ lessonId: requestedLessonId, snippet: contextText.slice(0, 200) }],
                                 lessonId: requestedLessonId,
                                 intent: intent || getTutorIntention(normalizedQuestion),
                                 sessionId: sessionId || requestedLearnerId,
                             });
                         }
-                        // Fall through to local grounded tutor for false OpenAI rejections
+
+                        // Truly off-topic: return the OpenAI rejection directly
+                        return res.json({
+                            ok: true,
+                            answer,
+                            source: 'openai',
+                            status: 'insufficient_context',
+                            references: [],
+                            lessonId: requestedLessonId,
+                            intent: intent || getTutorIntention(normalizedQuestion),
+                            sessionId: sessionId || requestedLearnerId,
+                        });
                     }
                 } else {
-                    const errorData = await aiResponse.json();
-                    console.error('OpenAI API error:', errorData);
+                    const errorText = await aiResponse.text().catch(() => 'unknown error');
+                    console.error('OpenAI API error status:', aiResponse.status, errorText);
                 }
             } catch (openaiError) {
-                console.error('OpenAI error, falling back to local:', openaiError.message);
+                console.error('OpenAI error, falling back to local tutor:', openaiError.message);
                 // Fall through to local tutor
             }
         }
