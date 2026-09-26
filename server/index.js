@@ -744,16 +744,35 @@ app.post('/api/tutor/ask', async (req, res) => {
 
                     if (answer) {
                         const isInsufficient = answer.includes('KHÔNG ĐỦ DỮ LIỆU');
-                        return res.json({
-                            ok: true,
-                            answer,
-                            source: 'openai',
-                            status: isInsufficient ? 'insufficient_context' : 'success',
-                            references: isInsufficient ? [] : [{ lessonId: requestedLessonId, snippet: contextText.slice(0, 200) }],
-                            lessonId: requestedLessonId,
-                            intent: intent || getTutorIntention(normalizedQuestion),
-                            sessionId: sessionId || requestedLearnerId,
-                        });
+                        if (!isInsufficient) {
+                            return res.json({
+                                ok: true,
+                                answer,
+                                source: 'openai',
+                                status: 'success',
+                                references: [{ lessonId: requestedLessonId, snippet: contextText.slice(0, 200) }],
+                                lessonId: requestedLessonId,
+                                intent: intent || getTutorIntention(normalizedQuestion),
+                                sessionId: sessionId || requestedLearnerId,
+                            });
+                        }
+
+                        const offTopicKeywords = ['weather', 'thời tiết', 'football', 'bóng đá', 'politics', 'chính trị', 'stock', 'cổ phiếu'];
+                        const isActuallyOffTopic = offTopicKeywords.some((keyword) => normalizedQuestion.toLowerCase().includes(keyword));
+
+                        if (isActuallyOffTopic) {
+                            return res.json({
+                                ok: true,
+                                answer,
+                                source: 'openai',
+                                status: 'insufficient_context',
+                                references: [],
+                                lessonId: requestedLessonId,
+                                intent: intent || getTutorIntention(normalizedQuestion),
+                                sessionId: sessionId || requestedLearnerId,
+                            });
+                        }
+                        // Fall through to local grounded tutor for false OpenAI rejections
                     }
                 } else {
                     const errorData = await aiResponse.json();
