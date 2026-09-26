@@ -730,39 +730,37 @@ app.post('/api/tutor/ask', async (req, res) => {
                     const answer = data.choices?.[0]?.message?.content?.trim();
 
                     if (answer) {
-                        // Check if OpenAI returned an off-topic rejection
                         const offTopicKeywords = ['weather', 'thời tiết', 'football', 'bóng đá', 'politics', 'chính trị', 'stock market', 'cổ phiếu', 'crypto', 'bitcoin'];
                         const isActuallyOffTopic = offTopicKeywords.some((keyword) => normalizedQuestion.toLowerCase().includes(keyword));
-                        
-                        // OpenAI may sometimes over-reject valid Vietnamese questions
-                        // Only treat as insufficient if question is truly off-topic
-                        const isInsufficient = (answer.includes('KHÔNG ĐỦ DỮ LIỆU') || answer.includes('nằm ngoài phạm vi')) && isActuallyOffTopic;
+                        const isRejection = answer.includes('KHÔNG ĐỦ DỮ LIỆU') || answer.includes('nằm ngoài phạm vi');
 
-                        if (!isInsufficient) {
-                            // Return OpenAI answer (even if it contains rejection for off-topic)
+                        if (isActuallyOffTopic) {
                             return res.json({
                                 ok: true,
-                                answer,
+                                answer: 'Câu hỏi này nằm ngoài phạm vi bài học. AI Tutor chỉ hỗ trợ các câu hỏi liên quan đến nội dung môn học Human-Centered Product Design.',
                                 source: 'openai',
-                                status: isActuallyOffTopic ? 'insufficient_context' : 'success',
-                                references: isActuallyOffTopic ? [] : [{ lessonId: requestedLessonId, snippet: contextText.slice(0, 200) }],
+                                status: 'insufficient_context',
+                                references: [],
                                 lessonId: requestedLessonId,
                                 intent: intent || getTutorIntention(normalizedQuestion),
                                 sessionId: sessionId || requestedLearnerId,
                             });
                         }
 
-                        // Truly off-topic: return the OpenAI rejection directly
-                        return res.json({
-                            ok: true,
-                            answer,
-                            source: 'openai',
-                            status: 'insufficient_context',
-                            references: [],
-                            lessonId: requestedLessonId,
-                            intent: intent || getTutorIntention(normalizedQuestion),
-                            sessionId: sessionId || requestedLearnerId,
-                        });
+                        // If OpenAI gave a valid answer or didn't falsely reject, use it
+                        if (!isRejection) {
+                            return res.json({
+                                ok: true,
+                                answer,
+                                source: 'openai',
+                                status: 'success',
+                                references: [{ lessonId: requestedLessonId, snippet: contextText.slice(0, 200) }],
+                                lessonId: requestedLessonId,
+                                intent: intent || getTutorIntention(normalizedQuestion),
+                                sessionId: sessionId || requestedLearnerId,
+                            });
+                        }
+                        // If OpenAI falsely rejected a valid educational question, fall through to local grounded tutor below
                     }
                 } else {
                     const errorText = await aiResponse.text().catch(() => 'unknown error');
@@ -770,7 +768,6 @@ app.post('/api/tutor/ask', async (req, res) => {
                 }
             } catch (openaiError) {
                 console.error('OpenAI error, falling back to local tutor:', openaiError.message);
-                // Fall through to local tutor
             }
         }
         
