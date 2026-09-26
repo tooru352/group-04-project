@@ -58,7 +58,7 @@ PORT=4000
 NODE_ENV=development
 DATABASE_URL=postgresql://user:password@host:5432/dbname
 JWT_SECRET=replace_with_secure_secret
-VITE_API_BASE_URL=http://localhost:4000
+VITE_API_BASE_URL=group-04-project-production.up.railway.app
 ```
 
 Notes:
@@ -133,6 +133,29 @@ Run the project validation checks:
 npm run typecheck
 python -m pytest tests -q
 ```
+
+### Test AI Tutor
+
+After starting the backend, test AI Tutor functionality:
+
+```bash
+# Reset database to load detailed lesson content
+node reset_database.js
+
+# Test AI Tutor locally (requires jq for JSON formatting)
+bash test_ai_tutor_quick.sh
+
+# Or test on production Railway
+bash test_ai_production.sh
+```
+
+Expected AI Tutor behavior:
+- ✅ Answers questions based on lesson content
+- ✅ Provides relevant examples from course material
+- ✅ Rejects off-topic questions with "KHÔNG ĐỦ DỮ LIỆU" message
+- ✅ References specific concepts like empathy mapping, prototyping methods, design systems
+
+See [test_ai_tutor.md](test_ai_tutor.md) for detailed test cases.
 
 If you need a quick smoke check for the API:
 
