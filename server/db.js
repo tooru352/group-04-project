@@ -193,9 +193,24 @@ export async function initializeDatabase() {
     if (courseOneId) {
         await query(
             `INSERT INTO lessons (course_id, title, content, duration, is_required, sort_order, status)
-             SELECT $1, 'Intro', 'Welcome to Human-Centered Product Design! This course introduces design thinking principles and user-centered design methodology. You will learn how to identify user needs, conduct effective research, synthesize insights, and prototype solutions that solve real problems. Throughout this course, we focus on empathy, iteration, and evidence-based decision making.', 25, TRUE, 1, 'Published'
+             SELECT $1, 'Bài 1: Giới thiệu & Nguyên lý Thiết kế lấy Người dùng làm Trung tâm (HCD)', '📌 NỘI DUNG CHI TIẾT BÀI HỌC 1:
+
+1. Khái niệm Cốt lõi (Core Concept):
+Phương pháp Thiết kế lấy Người dùng làm Trung tâm (Human-Centered Design - HCD) là quy trình sáng tạo giải quyết vấn đề bằng cách đặt nhu cầu, hành vi và cảm xúc của người dùng làm trọng tâm trong mọi quyết định phát triển sản phẩm.
+
+2. Quy trình 5 bước Design Thinking:
+• B1. Empathize (Thấu cảm): Tìm hiểu sâu sắc người dùng thông qua quan sát, phỏng vấn và trải nghiệm thực tế.
+• B2. Define (Xác định Vấn đề): Tổng hợp thông tin để tìm ra pain points (vấn đề nhức nhối) và User Persona.
+• B3. Ideate (Sáng tạo Ý tưởng): Brainstorming hàng loạt giải pháp khả thi mà không phán xét.
+• B4. Prototype (Tạo Mẫu thử): Xây dựng mẫu thử nhanh (paper sketch, wireframe Figma) để hiện thực hóa ý tưởng.
+• B5. Test (Thử nghiệm & Đánh giá): Cho người dùng thật trải nghiệm mẫu thử để nhận phản hồi và lặp lại cải tiến (Iteration).
+
+3. 3 Nguyên tắc Vàng trong HCD:
+① Dựa trên Dữ liệu Thực tế (Evidence-based): Quyết định thiết kế dựa vào dữ liệu người dùng thật, không dựa trên giả định cá nhân.
+② Lặp lại & Cải tiến Nhanh (Fail Fast, Learn Faster): Thử nghiệm sớm bằng mẫu thử đơn giản để tiết kiệm chi phí và thời gian.
+③ Đồng cảm trước, Giải pháp sau: Phải hiểu đúng nỗi đau của người dùng trước khi đi tìm lời giải kỹ thuật.', 25, TRUE, 1, 'Published'
              WHERE NOT EXISTS (
-                 SELECT 1 FROM lessons WHERE course_id = $1 AND title = 'Intro' LIMIT 1
+                 SELECT 1 FROM lessons WHERE course_id = $1 AND sort_order = 1 LIMIT 1
              );`,
             [courseOneId],
         );

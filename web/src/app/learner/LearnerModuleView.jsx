@@ -60,11 +60,54 @@ export default function LearnerModuleView({
     }
   }
 
+  const DEFAULT_LESSONS = [
+    {
+      id: 1,
+      course_id: openedCourse?.id || 1,
+      title: 'Bài 1: Giới thiệu & Nguyên lý Thiết kế lấy Người dùng làm Trung tâm (HCD)',
+      duration: 25,
+      content: `📌 NỘI DUNG CHI TIẾT BÀI HỌC 1:
+
+1. Khái niệm Cốt lõi (Core Concept):
+Phương pháp Thiết kế lấy Người dùng làm Trung tâm (Human-Centered Design - HCD) là quy trình sáng tạo giải quyết vấn đề bằng cách đặt nhu cầu, hành vi và cảm xúc của người dùng làm trọng tâm trong mọi quyết định phát triển sản phẩm.
+
+2. Quy trình 5 bước Design Thinking:
+• B1. Empathize (Thấu cảm): Tìm hiểu sâu sắc người dùng thông qua quan sát, phỏng vấn và trải nghiệm thực tế.
+• B2. Define (Xác định Vấn đề): Tổng hợp thông tin để tìm ra pain points (vấn đề nhức nhối) và User Persona.
+• B3. Ideate (Sáng tạo Ý tưởng): Brainstorming hàng loạt giải pháp khả thi mà không phán xét.
+• B4. Prototype (Tạo Mẫu thử): Xây dựng mẫu thử nhanh (paper sketch, wireframe Figma) để hiện thực hóa ý tưởng.
+• B5. Test (Thử nghiệm & Đánh giá): Cho người dùng thật trải nghiệm mẫu thử để nhận phản hồi và lặp lại cải tiến (Iteration).
+
+3. 3 Nguyên tắc Vàng trong HCD:
+① Dựa trên Dữ liệu Thực tế (Evidence-based): Quyết định thiết kế dựa vào dữ liệu người dùng thật, không dựa trên giả định cá nhân.
+② Lặp lại & Cải tiến Nhanh (Fail Fast, Learn Faster): Thử nghiệm sớm bằng mẫu thử đơn giản để tiết kiệm chi phí và thời gian.
+③ Đồng cảm trước, Giải pháp sau: Phải hiểu đúng nỗi đau của người dùng trước khi đi tìm lời giải kỹ thuật.`
+    },
+    {
+      id: 2,
+      course_id: openedCourse?.id || 1,
+      title: 'Bài 2: Nghiên cứu Người dùng (User Research) & Lập Empathy Map',
+      duration: 30,
+      content: `📌 NỘI DUNG CHI TIẾT BÀI HỌC 2:
+
+1. Phương pháp Nghiên cứu Định tính (Qualitative Research):
+• Phỏng vấn sâu (In-depth Interviews): Đặt câu hỏi mở để khai thác trải nghiệm và cảm xúc thực tế.
+• Quan sát hành vi (User Observation): Theo dõi cách người dùng tương tác với sản phẩm trong môi trường tự nhiên.
+
+2. Kỹ thuật Lập Bản đồ Thấu cảm (Empathy Mapping):
+Phân tích tâm lý người dùng qua 4 ô quan trọng:
+• Says (Họ nói gì): Các phát biểu trực tiếp của người dùng.
+• Thinks (Họ suy nghĩ gì): Những băn khoăn, lo lắng thầm kín.
+• Does (Họ hành động thế nào): Thao tác thực tế trên giao diện.
+• Feels (Cảm xúc của họ): Mức độ hài lòng hay thất vọng tại từng điểm chạm.`
+    }
+  ]
+
   // Load lessons when a course is selected or opened
   useEffect(() => {
     const courseId = openedCourse?.id || selectedCourseId
     if (!courseId) {
-      setLessons([])
+      setLessons(DEFAULT_LESSONS)
       return
     }
 
@@ -72,9 +115,16 @@ export default function LearnerModuleView({
     fetch(`${API_BASE}/api/courses/${courseId}/lessons`)
       .then((r) => r.json())
       .then((data) => {
-        if (data.ok) setLessons(data.lessons || [])
+        if (data.ok && Array.isArray(data.lessons) && data.lessons.length > 0) {
+          setLessons(data.lessons)
+        } else {
+          setLessons(DEFAULT_LESSONS)
+        }
       })
-      .catch((err) => console.error('Failed to fetch lessons:', err))
+      .catch((err) => {
+        console.error('Failed to fetch lessons, using default:', err)
+        setLessons(DEFAULT_LESSONS)
+      })
       .finally(() => setLoadingLessons(false))
   }, [selectedCourseId, openedCourse?.id])
 
