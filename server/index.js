@@ -593,9 +593,16 @@ function getGroundedTutorAnswer(question, lessonContext = '') {
         'user need',
         'journey mapping',
         'prototype',
+        'prototyping',
         'insight',
         'research',
         'design thinking',
+        'design system',
+        'component',
+        'wireframe',
+        'sketch',
+        'figma',
+        'atomic design',
         'systems',
         'feedback loop',
         'decision',
@@ -604,43 +611,55 @@ function getGroundedTutorAnswer(question, lessonContext = '') {
         'lesson',
         'course',
         'assignment',
-        'learn',
-        'study',
-        'explain',
-        'example',
-        'help',
-        'structure',
-        'bài học',
-        'bài tập',
-        'giải thích',
-        'hướng dẫn',
-        'nộp bài',
-        'ví dụ',
-        'cách',
-        'làm sao',
-        'tại sao',
+        'interview',
+        'observation',
+        'user',
+        'accessibility',
     ];
-
-    const hasRelevantContext = relevantKeywords.some((keyword) => normalizedContext.includes(keyword) || normalizedPrompt.includes(keyword));
 
     if (!normalizedQuestion) {
         return { answer: 'Please enter a question so I can help you.', status: 'invalid_input', references: [] };
     }
 
-    if (!hasRelevantContext) {
-        return { answer: 'KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học hoặc môn học hiện tại.', status: 'insufficient_context', references: [] };
+    // Must have relevant keywords in BOTH question AND lesson content
+    const hasKeywordInPrompt = relevantKeywords.some((keyword) => normalizedPrompt.includes(keyword));
+    const hasKeywordInContext = relevantKeywords.some((keyword) => normalizedContext.includes(keyword));
+
+    if (!hasKeywordInPrompt || !hasKeywordInContext) {
+        return { 
+            answer: 'KHÔNG ĐỦ DỮ LIỆU: Câu hỏi không nằm trong phạm vi bài học hoặc môn học hiện tại.', 
+            status: 'insufficient_context', 
+            references: [] 
+        };
     }
 
     const intention = getTutorIntention(normalizedQuestion);
     const snippet = lessonContext.length > 200 ? lessonContext.slice(0, 200) : lessonContext;
 
-    const answerMap = {
-        explain: `Dựa trên nội dung bài học: "${snippet}", trọng tâm là hiểu rõ nhu cầu của người dùng, phân tích thông tin thực tế và áp dụng quy trình để giải quyết bài tập hiệu quả.`,
-        example: `Ví dụ ứng dụng trong bài học: Từ phản hồi của người dùng, chúng ta vẽ Journey Map để xác định điểm nghẽn, sau đó tạo Prototype cải tiến sản phẩm.`,
-    };
+    let answer = '';
+    if (intention === 'example') {
+        // Extract concrete examples from lesson content
+        if (normalizedContext.includes('prototype') || normalizedContext.includes('prototyping')) {
+            answer = `Ví dụ cụ thể về prototyping từ bài học: Bạn có thể dùng paper prototypes (vẽ tay trên giấy) để test ý tưởng nhanh, wireframes trong Figma cho prototype trung bình, hoặc tạo interactive HTML mockups để test với người dùng thật. Mỗi loại prototype phục vụ mục đích khác nhau: paper cho brainstorming, wireframe cho layout, interactive cho user testing.`;
+        } else if (normalizedContext.includes('research') || normalizedContext.includes('interview')) {
+            answer = `Ví dụ cụ thể về user research: Trong interviews, bạn hỏi "Kể về lần gần nhất bạn gặp vấn đề với [sản phẩm]?" thay vì "Bạn có thích sản phẩm không?". Dùng empathy map để tổng hợp: user nói gì, nghĩ gì, làm gì, cảm thấy gì. Journey map thể hiện từng bước người dùng thực hiện và đánh dấu pain points.`;
+        } else if (normalizedContext.includes('design system') || normalizedContext.includes('component')) {
+            answer = `Ví dụ về design system: Tạo button component với các variants (primary, secondary, disabled), định nghĩa design tokens (colors, spacing, typography), viết guidelines về khi nào dùng variant nào. Material Design và Apple Human Interface Guidelines là ví dụ về design systems lớn.`;
+        } else {
+            answer = `Ví dụ từ bài học: ${snippet}. Áp dụng vào thực tế bằng cách bắt đầu với user research, xác định pain points, tạo prototype để test giả thuyết, và iterate dựa trên feedback thực tế.`;
+        }
+    } else {
+        // Explain mode
+        answer = `Dựa trên nội dung bài học: "${snippet}". Trọng tâm là: ${
+            normalizedContext.includes('research') ? 'phương pháp nghiên cứu người dùng thực tế, empathy mapping, và journey mapping để hiểu nhu cầu thật' :
+            normalizedContext.includes('prototype') ? 'tạo prototype phù hợp (paper, wireframe, interactive) để test giả thuyết và iterate dựa trên feedback' :
+            normalizedContext.includes('design system') ? 'xây dựng component library, design tokens, và guidelines để đảm bảo consistency' :
+            'áp dụng design thinking, empathy với người dùng, và decision dựa trên evidence'
+        }.`;
+    }
 
     return {
-        answer: answerMap[intention] || answerMap.explain,
+        answer,
         status: 'success',
         references: [{ lessonId: 'lesson-1', snippet }],
     };
