@@ -148,13 +148,28 @@ curl http://localhost:4000/api/users
 4. Build and serve the frontend.
 5. Run a smoke test against the deployed environment.
 
+### Production Health Checks
+
+After deployment, verify these endpoints:
+
+**Backend (Railway):**
+```bash
+curl https://group-04-project-production.up.railway.app/api/health
+```
+Expected: `{"ok":true,"db":"connected",...}`
+
+**Frontend (Vercel):**
+- Open your Vercel URL
+- Verify login page loads
+- Test login with seed account
+
 ### Docker / Compose
 
 ```bash
 docker compose up --build
 ```
 
-This repo includes Docker assets for running the API and frontend containers.
+This repo includes Docker assets for running the API and frontend containers with automated health checks.
 
 ## Rollback and forward-fix
 
