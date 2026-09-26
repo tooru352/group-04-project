@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const API_BASE = 'http://localhost:4000'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000'
 
 export default function AiTutorChatBox({
   userId,
@@ -19,12 +19,12 @@ export default function AiTutorChatBox({
   const defaultQuickPrompts = quickPrompts.length > 0
     ? quickPrompts
     : [
-        '💡 Giải thích khái niệm bài học này',
-        '🔍 Cho tôi ví dụ thực tế minh họa',
-        '📝 Hướng dẫn cách ứng dụng vào bài tập',
+        { text: '💡 Giải thích khái niệm bài học này', intent: 'explain' },
+        { text: '🔍 Cho tôi ví dụ thực tế minh họa', intent: 'example' },
+        { text: '📝 Tóm tắt ý chính của bài học', intent: 'explain' },
       ]
 
-  const handleAsk = async (customPrompt) => {
+  const handleAsk = async (customPrompt, customIntent) => {
     const questionText = (customPrompt || prompt).trim()
     if (!questionText) return
 
@@ -33,6 +33,17 @@ export default function AiTutorChatBox({
     setAnswer(null)
 
     try {
+      // Auto-detect intent from question if not provided
+      let detectedIntent = customIntent
+      if (!detectedIntent) {
+        const lowerQ = questionText.toLowerCase()
+        if (lowerQ.includes('ví dụ') || lowerQ.includes('example') || lowerQ.includes('minh họa') || lowerQ.includes('illustrate')) {
+          detectedIntent = 'example'
+        } else {
+          detectedIntent = 'explain'
+        }
+      }
+
       const res = await fetch(`${API_BASE}/api/tutor/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,6 +52,7 @@ export default function AiTutorChatBox({
           lessonId,
           learnerId: userId || 1,
           sessionId: userId || 1,
+          intent: detectedIntent,
         }),
       })
 
@@ -125,29 +137,34 @@ export default function AiTutorChatBox({
 
       {/* Quick Prompts */}
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-        {defaultQuickPrompts.map((qp) => (
-          <button
-            key={qp}
-            type="button"
-            style={{
-              fontSize: '0.78rem',
-              padding: '4px 10px',
-              borderRadius: 14,
-              border: '1px solid #93c5fd',
-              background: '#fff',
-              color: '#1d4ed8',
-              cursor: 'pointer',
-              fontWeight: 500,
-            }}
-            onClick={() => {
-              const text = qp.replace(/^[\p{Emoji}\s]+/u, '')
-              setPrompt(text)
-              handleAsk(text)
-            }}
-          >
-            {qp}
-          </button>
-        ))}
+        {defaultQuickPrompts.map((qp) => {
+          const promptText = typeof qp === 'string' ? qp : qp.text
+          const promptIntent = typeof qp === 'string' ? 'explain' : qp.intent
+          
+          return (
+            <button
+              key={promptText}
+              type="button"
+              style={{
+                fontSize: '0.78rem',
+                padding: '4px 10px',
+                borderRadius: 14,
+                border: '1px solid #93c5fd',
+                background: '#fff',
+                color: '#1d4ed8',
+                cursor: 'pointer',
+                fontWeight: 500,
+              }}
+              onClick={() => {
+                const text = promptText.replace(/^[\p{Emoji}\s]+/u, '')
+                setPrompt(text)
+                handleAsk(text, promptIntent)
+              }}
+            >
+              {promptText}
+            </button>
+          )
+        })}
       </div>
 
       {/* Question Form */}
